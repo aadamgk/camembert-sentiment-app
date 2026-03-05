@@ -194,6 +194,19 @@ textarea::placeholder, .stTextArea textarea::placeholder {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+div[data-baseweb="textarea"] textarea {
+    background-color: #1e1e2e !important;
+    color: #f0f0f5 !important;
+    -webkit-text-fill-color: #f0f0f5 !important;
+}
+div[data-baseweb="base-input"] {
+    background-color: #1e1e2e !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ─── Session state ──────────────────────────────────────────────────────────────
 if "new_comments" not in st.session_state:
     st.session_state.new_comments = []
