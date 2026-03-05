@@ -204,12 +204,15 @@ st.markdown('<div class="main-title">Ynov Sentiment<br>Analyser</div>', unsafe_a
 st.markdown('<div class="subtitle">Analyse des avis étudiants · Powered by XLM-RoBERTa</div>', unsafe_allow_html=True)
 
 # ─── Load data ─────────────────────────────────────────────────────────────────
-df_source = None
-uploaded = st.file_uploader("Importer le dataset (CSV)", type="csv", label_visibility="collapsed")
+@st.cache_data
+def load_data():
+    url = "https://raw.githubusercontent.com/aadamgk/camembert-sentiment-app/master/avis_ynov_All_final.csv"
+    return pd.read_csv(url, on_bad_lines='skip')
 
-if uploaded:
+df_source = load_data()
+
+if df_source is not None:
     try:
-        df_source = pd.read_csv(uploaded, on_bad_lines='skip')
         if "sentiment_label" in df_source.columns:
             counts = df_source["sentiment_label"].value_counts()
             total = len(df_source)
