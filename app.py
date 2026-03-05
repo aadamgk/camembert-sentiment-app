@@ -119,12 +119,21 @@ html, body, [data-testid="stAppViewContainer"] {
 .result-neg { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: #f87171; }
 .result-neu { background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.3); color: #60a5fa; }
 
-textarea {
-    background: rgba(255,255,255,0.04) !important;
+textarea, .stTextArea textarea {
+    background: rgba(255,255,255,0.06) !important;
     border: 1px solid rgba(255,255,255,0.1) !important;
     border-radius: 12px !important;
     color: #f0f0f5 !important;
     font-family: 'DM Sans', sans-serif !important;
+    caret-color: #a78bfa !important;
+}
+
+textarea::placeholder, .stTextArea textarea::placeholder {
+    color: #4b5563 !important;
+}
+
+.stTextArea > div > div {
+    background: transparent !important;
 }
 
 .stButton > button {
