@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 from transformers import pipeline
 from datetime import datetime
+import re
 
 # ─── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -217,7 +218,7 @@ def load_model():
     return pipeline("sentiment-analysis", model="cardiffnlp/twitter-xlm-roberta-base-sentiment")
 
 def predict(text, classifier):
-    result = classifier(text[:512])[0]
+    result = classifier(text, truncation=True, max_length=512)[0]
     label_map = {"positive": "positif", "negative": "négatif", "neutral": "neutre"}
     return label_map.get(result["label"], result["label"]), round(result["score"] * 100, 1)
 
@@ -225,8 +226,44 @@ def predict(text, classifier):
 st.markdown('<div class="main-title">Ynov Sentiment<br>Analyser</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Analyse des avis étudiants · Powered by XLM-RoBERTa</div>', unsafe_allow_html=True)
 
+def parse_french_relative_date(date_str):
+    if not isinstance(date_str, str):
+        return pd.NaT
+
+    date_str = str(date_str).lower().strip()
+
+    match = re.search(r'(?:il y a)\s+(un|une|\d+)\s+(minute|minutes|heure|heures|jour|jours|semaine|semaines|mois|an|ans)', date_str)
+
+    if not match:
+        return pd.to_datetime(date_str, errors="coerce")
+
+    qty_str = match.group(1)
+    unit_str = match.group(2)
+
+    if qty_str in ['un', 'une']:
+        qty = 1
+    else:
+        qty = int(qty_str)
+
+    now = pd.Timestamp.now()
+
+    if 'minute' in unit_str:
+        return now - pd.DateOffset(minutes=qty)
+    elif 'heure' in unit_str:
+        return now - pd.DateOffset(hours=qty)
+    elif 'jour' in unit_str:
+        return now - pd.DateOffset(days=qty)
+    elif 'semaine' in unit_str:
+        return now - pd.DateOffset(weeks=qty)
+    elif 'mois' in unit_str:
+        return now - pd.DateOffset(months=qty)
+    elif 'an' in unit_str:
+        return now - pd.DateOffset(years=qty)
+
+    return pd.NaT
+
 # ─── Load data ─────────────────────────────────────────────────────────────────
-@st.cache_data
+@st.cache_data(ttl=3600)
 def load_data():
     url = "https://raw.githubusercontent.com/aadamgk/camembert-sentiment-app/master/avis_ynov_All_final.csv"
     return pd.read_csv(url, on_bad_lines='skip')
@@ -284,7 +321,7 @@ if df_source is not None:
 
             with col_right:
                 if "date" in df_source.columns:
-                    df_source["date_clean"] = pd.to_datetime(df_source["date"], errors="coerce")
+                    df_source["date_clean"] = df_source["date"].apply(parse_french_relative_date)
                     df_time = df_source.dropna(subset=["date_clean"]).groupby(
                         [df_source["date_clean"].dt.to_period("M"), "sentiment_label"]
                     ).size().reset_index(name="count")
@@ -327,7 +364,7 @@ col_input, col_history = st.columns([1, 1], gap="large")
 
 with col_input:
     st.markdown('<div class="section-title">✍️ Analyser un commentaire</div>', unsafe_allow_html=True)
-    comment = st.text_area("", placeholder="Entrez un avis étudiant...", height=130, label_visibility="collapsed")
+    comment = st.text_area("Commentaire", placeholder="Entrez un avis étudiant...", height=130, label_visibility="collapsed")
 
     if st.button("Analyser le sentiment"):
         if comment.strip():
