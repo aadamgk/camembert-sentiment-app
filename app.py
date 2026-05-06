@@ -217,8 +217,8 @@ MODELS = {
         "id": "Ahmat293/camembert-sentiment-ynov",
         "label_map": {"LABEL_0": "négatif", "LABEL_1": "positif"},
     },
-    "DistilCamemBERT (augmenté)": {
-        "id": "Ahmat293/distilcamembert-ynov-augmented",
+    "CamemBERT (augmenté)": {
+        "id": "Ahmat293/camembert-ynov-augmented",
         "label_map": {"negatif": "négatif", "positif": "positif"},
     },
 }
@@ -234,7 +234,7 @@ def predict(text, classifier, label_map):
 
 # ─── Header ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="main-title">Ynov Sentiment<br>Analyser</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Analyse des avis étudiants · CamemBERT vs DistilCamemBERT</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Analyse des avis étudiants · CamemBERT original vs augmenté</div>', unsafe_allow_html=True)
 
 # ─── Load data ─────────────────────────────────────────────────────────────────
 @st.cache_data
@@ -393,7 +393,7 @@ with col_history:
 
         for item in reversed(st.session_state.new_comments[-8:]):
             badge_class = {"positif": "badge-pos", "négatif": "badge-neg", "neutre": "badge-neu"}.get(item["sentiment"], "badge-neu")
-            model_short = "CamemBERT" if "CamemBERT (original)" in item.get("model", "") else "DistilCam."
+            model_short = "CamemBERT" if "CamemBERT (original)" in item.get("model", "") else "Augmenté"
             st.markdown(f'''
             <div class="comment-item">
                 <span style="color:#d1d5db;flex:1">{item["comment"]}</span>
@@ -410,4 +410,4 @@ with col_history:
 
 # ─── Footer ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-st.markdown('<div style="text-align:center;color:#374151;font-size:0.75rem;letter-spacing:0.1em">YNOV SENTIMENT ANALYSER · CamemBERT × DistilCamemBERT · 2026</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align:center;color:#374151;font-size:0.75rem;letter-spacing:0.1em">YNOV SENTIMENT ANALYSER · CamemBERT original × augmenté · 2026</div>', unsafe_allow_html=True)
