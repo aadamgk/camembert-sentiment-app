@@ -211,19 +211,30 @@ div[data-baseweb="base-input"] {
 if "new_comments" not in st.session_state:
     st.session_state.new_comments = []
 
-# ─── Model ─────────────────────────────────────────────────────────────────────
-@st.cache_resource
-def load_model():
-    return pipeline("sentiment-analysis", model="cardiffnlp/twitter-xlm-roberta-base-sentiment")
+# ─── Modèles disponibles ──────────────────────────────────────────────────────
+MODELS = {
+    "CamemBERT (original)": {
+        "id": "Ahmat293/camembert-sentiment-ynov",
+        "label_map": {"LABEL_0": "négatif", "LABEL_1": "positif"},
+    },
+    "DistilCamemBERT (augmenté)": {
+        "id": "Ahmat293/distilcamembert-ynov-augmented",
+        "label_map": {"negatif": "négatif", "positif": "positif"},
+    },
+}
 
-def predict(text, classifier):
+@st.cache_resource
+def load_model(model_id):
+    return pipeline("sentiment-analysis", model=model_id)
+
+def predict(text, classifier, label_map):
     result = classifier(text[:512])[0]
-    label_map = {"positive": "positif", "negative": "négatif", "neutral": "neutre"}
-    return label_map.get(result["label"], result["label"]), round(result["score"] * 100, 1)
+    raw_label = result["label"]
+    return label_map.get(raw_label, raw_label), round(result["score"] * 100, 1)
 
 # ─── Header ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="main-title">Ynov Sentiment<br>Analyser</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Analyse des avis étudiants · Powered by XLM-RoBERTa</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Analyse des avis étudiants · CamemBERT vs DistilCamemBERT</div>', unsafe_allow_html=True)
 
 # ─── Load data ─────────────────────────────────────────────────────────────────
 @st.cache_data
@@ -327,13 +338,22 @@ col_input, col_history = st.columns([1, 1], gap="large")
 
 with col_input:
     st.markdown('<div class="section-title">✍️ Analyser un commentaire</div>', unsafe_allow_html=True)
+
+    selected_model_name = st.radio(
+        "Modèle",
+        options=list(MODELS.keys()),
+        horizontal=True,
+        key="model_selector",
+    )
+
     comment = st.text_area("", placeholder="Entrez un avis étudiant...", height=130, label_visibility="collapsed")
 
     if st.button("Analyser le sentiment"):
         if comment.strip():
             with st.spinner("Analyse en cours..."):
-                classifier = load_model()
-                sentiment, confidence = predict(comment, classifier)
+                config = MODELS[selected_model_name]
+                classifier = load_model(config["id"])
+                sentiment, confidence = predict(comment, classifier, config["label_map"])
 
             css_class = {"positif": "result-pos", "négatif": "result-neg", "neutre": "result-neu"}.get(sentiment, "result-neu")
             icon = {"positif": "😊", "négatif": "😞", "neutre": "😐"}.get(sentiment, "😐")
@@ -344,7 +364,8 @@ with col_input:
                 "comment": comment[:60] + "..." if len(comment) > 60 else comment,
                 "sentiment": sentiment,
                 "confidence": confidence,
-                "time": datetime.now().strftime("%H:%M")
+                "time": datetime.now().strftime("%H:%M"),
+                "model": selected_model_name,
             })
         else:
             st.warning("Entrez un commentaire d'abord.")
@@ -372,9 +393,11 @@ with col_history:
 
         for item in reversed(st.session_state.new_comments[-8:]):
             badge_class = {"positif": "badge-pos", "négatif": "badge-neg", "neutre": "badge-neu"}.get(item["sentiment"], "badge-neu")
+            model_short = "CamemBERT" if "CamemBERT (original)" in item.get("model", "") else "DistilCam."
             st.markdown(f'''
             <div class="comment-item">
                 <span style="color:#d1d5db;flex:1">{item["comment"]}</span>
+                <span style="color:#6b7280;font-size:0.7rem;margin:0 0.5rem">{model_short}</span>
                 <span style="color:#4b5563;font-size:0.75rem;margin:0 0.8rem">{item["time"]}</span>
                 <span class="badge {badge_class}">{item["sentiment"]}</span>
             </div>''', unsafe_allow_html=True)
@@ -387,4 +410,4 @@ with col_history:
 
 # ─── Footer ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-st.markdown('<div style="text-align:center;color:#374151;font-size:0.75rem;letter-spacing:0.1em">YNOV SENTIMENT ANALYSER · XLM-RoBERTa · 2026</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align:center;color:#374151;font-size:0.75rem;letter-spacing:0.1em">YNOV SENTIMENT ANALYSER · CamemBERT × DistilCamemBERT · 2026</div>', unsafe_allow_html=True)
