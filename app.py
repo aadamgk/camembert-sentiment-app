@@ -217,7 +217,8 @@ MODELS = {
         "id": "Ahmat293/camembert-sentiment-ynov",
         "subfolder": "model",            # le modèle est dans un sous-dossier
         "tokenizer_subfolder": "tokenizer",
-        "label_map": {"LABEL_0": "négatif", "LABEL_1": "positif"},
+        # Modèle 3 classes (négatif/neutre/positif), ordre alphabétique sklearn par défaut
+        "label_map": {"LABEL_0": "négatif", "LABEL_1": "neutre", "LABEL_2": "positif"},
     },
     "CamemBERT (augmenté)": {
         "id": "Ahmat293/camembert-ynov-augmented",
