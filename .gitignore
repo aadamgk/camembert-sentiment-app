@@ -1,3 +1,8 @@
 intermediate/
 batches/
 .streamlit/secrets.toml
+.claude/
+.test/
+.venv/
+__pycache__/
+*.pyc
