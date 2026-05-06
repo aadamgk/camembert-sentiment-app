@@ -207,24 +207,224 @@ div[data-baseweb="base-input"] {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* ─── Cards de sélection de modèle ─── */
+.model-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.25s ease;
+    position: relative;
+    height: 100%;
+    min-height: 220px;
+}
+
+.model-card:hover {
+    border-color: rgba(167,139,250,0.4);
+    background: rgba(167,139,250,0.06);
+    transform: translateY(-2px);
+}
+
+.model-card.selected {
+    border-color: rgba(167,139,250,0.7);
+    background: linear-gradient(135deg, rgba(167,139,250,0.08), rgba(96,165,250,0.08));
+    box-shadow: 0 0 30px rgba(167,139,250,0.15);
+}
+
+.model-card.selected::after {
+    content: "✓";
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    color: #a78bfa;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.model-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+}
+
+.model-card-emoji {
+    font-size: 1.4rem;
+}
+
+.model-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f0f0f5;
+}
+
+.model-card-subtitle {
+    font-size: 0.78rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.model-card-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.model-badge {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 0.45rem 0.7rem;
+    text-align: center;
+    flex: 1;
+}
+
+.model-badge-label {
+    color: #6b7280;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.15rem;
+}
+
+.model-badge-value {
+    color: #f0f0f5;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.model-card-desc {
+    font-size: 0.78rem;
+    color: #9ca3af;
+    line-height: 1.45;
+    margin-bottom: 0.8rem;
+}
+
+.model-card-link {
+    color: #a78bfa;
+    font-size: 0.72rem;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(167,139,250,0.4);
+    padding-bottom: 1px;
+}
+
+.model-card-link:hover {
+    color: #c4b5fd;
+    border-color: rgba(196,181,253,0.7);
+}
+
+/* ─── Bouton de sélection en overlay (transparent) ─── */
+.model-selector-row .stButton > button {
+    background: transparent !important;
+    border: none !important;
+    color: transparent !important;
+    width: 100% !important;
+    height: 220px !important;
+    margin-top: -240px !important;
+    padding: 0 !important;
+    z-index: 10;
+    position: relative;
+    cursor: pointer;
+    box-shadow: none !important;
+}
+
+.model-selector-row .stButton > button:hover {
+    background: transparent !important;
+}
+
+.model-selector-row .stButton > button:focus {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* ─── Barre de confiance ─── */
+.confidence-bar-track {
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    margin-top: 0.8rem;
+    overflow: hidden;
+}
+
+.confidence-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.confidence-bar-label {
+    font-size: 0.7rem;
+    color: #6b7280;
+    text-align: right;
+    margin-top: 0.3rem;
+}
+
+/* ─── Historique enrichi ─── */
+.comment-item-augmented { border-left: 3px solid #a78bfa; }
+.comment-item-original  { border-left: 3px solid #6b7280; }
+
+.history-model-icon {
+    font-size: 0.9rem;
+    margin: 0 0.4rem;
+}
+
+/* ─── Footer enrichi ─── */
+.footer-links {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.footer-links a {
+    color: #6b7280;
+    text-decoration: none;
+    margin: 0 0.4rem;
+}
+
+.footer-links a:hover {
+    color: #a78bfa;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ─── Session state ──────────────────────────────────────────────────────────────
 if "new_comments" not in st.session_state:
     st.session_state.new_comments = []
+if "selected_model" not in st.session_state:
+    st.session_state.selected_model = "CamemBERT (augmenté)"
 
 # ─── Modèles disponibles ──────────────────────────────────────────────────────
 MODELS = {
     "CamemBERT (original)": {
         "id": "Ahmat293/camembert-sentiment-ynov",
-        "subfolder": "model",            # le modèle est dans un sous-dossier
+        "subfolder": "model",
         "tokenizer_subfolder": "tokenizer",
-        # Modèle 3 classes (négatif/neutre/positif), ordre alphabétique sklearn par défaut
         "label_map": {"LABEL_0": "négatif", "LABEL_1": "neutre", "LABEL_2": "positif"},
+        "emoji": "📜",
+        "base_model": "camembert-base",
+        "num_classes": 3,
+        "accuracy": None,
+        "f1_macro": None,
+        "description": "Modèle initial entraîné sur le dataset original (550 avis, 3 classes pos/neu/neg)",
+        "hf_url": "https://huggingface.co/Ahmat293/camembert-sentiment-ynov",
     },
     "CamemBERT (augmenté)": {
         "id": "Ahmat293/camembert-ynov-augmented",
-        "subfolder": None,                # à la racine
+        "subfolder": None,
         "tokenizer_subfolder": None,
         "label_map": {"negatif": "négatif", "positif": "positif"},
+        "emoji": "✨",
+        "base_model": "camembert-base",
+        "num_classes": 2,
+        "accuracy": 0.9833,
+        "f1_macro": 0.9833,
+        "description": "Fine-tuné sur dataset augmenté (394 avis, binaire pos/neg)",
+        "hf_url": "https://huggingface.co/Ahmat293/camembert-ynov-augmented",
     },
 }
 
@@ -346,19 +546,55 @@ st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 col_input, col_history = st.columns([1, 1], gap="large")
 
+def render_model_card(model_name, is_selected):
+    cfg = MODELS[model_name]
+    selected_class = "selected" if is_selected else ""
+    acc = f"{cfg['accuracy']*100:.1f}%" if cfg['accuracy'] is not None else "—"
+    f1 = f"{cfg['f1_macro']:.3f}" if cfg['f1_macro'] is not None else "—"
+
+    return f"""
+    <div class="model-card {selected_class}">
+        <div class="model-card-header">
+            <span class="model-card-emoji">{cfg['emoji']}</span>
+            <span class="model-card-title">{model_name}</span>
+        </div>
+        <div class="model-card-subtitle">{cfg['base_model']} · {cfg['num_classes']} classes</div>
+        <div class="model-card-badges">
+            <div class="model-badge">
+                <div class="model-badge-label">Accuracy</div>
+                <div class="model-badge-value">{acc}</div>
+            </div>
+            <div class="model-badge">
+                <div class="model-badge-label">F1 macro</div>
+                <div class="model-badge-value">{f1}</div>
+            </div>
+        </div>
+        <div class="model-card-desc">{cfg['description']}</div>
+        <a href="{cfg['hf_url']}" target="_blank" class="model-card-link">→ voir sur Hugging Face</a>
+    </div>
+    """
+
 with col_input:
     st.markdown('<div class="section-title">✍️ Analyser un commentaire</div>', unsafe_allow_html=True)
 
-    selected_model_name = st.radio(
-        "Modèle",
-        options=list(MODELS.keys()),
-        horizontal=True,
-        key="model_selector",
-    )
+    # ─── Sélecteur de modèle en cards ─────────────────────────────────────
+    st.markdown('<div class="model-selector-row">', unsafe_allow_html=True)
+    card_cols = st.columns(2)
+    model_names = list(MODELS.keys())
+    for col, name in zip(card_cols, model_names):
+        with col:
+            is_selected = (st.session_state.selected_model == name)
+            st.markdown(render_model_card(name, is_selected), unsafe_allow_html=True)
+            if st.button(f"select_{name}", key=f"btn_{name}"):
+                st.session_state.selected_model = name
+                st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    selected_model_name = st.session_state.selected_model
 
     comment = st.text_area("", placeholder="Entrez un avis étudiant...", height=130, label_visibility="collapsed")
 
-    if st.button("Analyser le sentiment"):
+    if st.button("Analyser le sentiment", key="analyze_btn"):
         if comment.strip():
             with st.spinner("Analyse en cours..."):
                 config = MODELS[selected_model_name]
@@ -367,8 +603,15 @@ with col_input:
 
             css_class = {"positif": "result-pos", "négatif": "result-neg", "neutre": "result-neu"}.get(sentiment, "result-neu")
             icon = {"positif": "😊", "négatif": "😞", "neutre": "😐"}.get(sentiment, "😐")
+            bar_gradient = {
+                "positif": "linear-gradient(90deg, #34d399, #10b981)",
+                "négatif": "linear-gradient(90deg, #f87171, #ef4444)",
+                "neutre":  "linear-gradient(90deg, #60a5fa, #3b82f6)",
+            }.get(sentiment, "linear-gradient(90deg, #60a5fa, #3b82f6)")
 
-            st.markdown(f'<div class="result-box {css_class}">{icon} <span>{sentiment.upper()}</span> <span style="opacity:0.6;font-size:0.9rem;margin-left:auto">{confidence}% confiance</span></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="result-box {css_class}">{icon} <span>{sentiment.upper()}</span></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="confidence-bar-track"><div class="confidence-bar-fill" style="width:{confidence}%;background:{bar_gradient}"></div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="confidence-bar-label">{confidence}% de confiance</div>', unsafe_allow_html=True)
 
             st.session_state.new_comments.append({
                 "comment": comment[:60] + "..." if len(comment) > 60 else comment,
@@ -403,11 +646,17 @@ with col_history:
 
         for item in reversed(st.session_state.new_comments[-8:]):
             badge_class = {"positif": "badge-pos", "négatif": "badge-neg", "neutre": "badge-neu"}.get(item["sentiment"], "badge-neu")
-            model_short = "CamemBERT" if "CamemBERT (original)" in item.get("model", "") else "Augmenté"
+            item_model = item.get("model", "")
+            if "augmenté" in item_model.lower():
+                model_class = "comment-item-augmented"
+                model_icon = "✨"
+            else:
+                model_class = "comment-item-original"
+                model_icon = "📜"
             st.markdown(f'''
-            <div class="comment-item">
+            <div class="comment-item {model_class}">
+                <span class="history-model-icon">{model_icon}</span>
                 <span style="color:#d1d5db;flex:1">{item["comment"]}</span>
-                <span style="color:#6b7280;font-size:0.7rem;margin:0 0.5rem">{model_short}</span>
                 <span style="color:#4b5563;font-size:0.75rem;margin:0 0.8rem">{item["time"]}</span>
                 <span class="badge {badge_class}">{item["sentiment"]}</span>
             </div>''', unsafe_allow_html=True)
@@ -420,4 +669,13 @@ with col_history:
 
 # ─── Footer ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-st.markdown('<div style="text-align:center;color:#374151;font-size:0.75rem;letter-spacing:0.1em">YNOV SENTIMENT ANALYSER · CamemBERT original × augmenté · 2026</div>', unsafe_allow_html=True)
+st.markdown('''
+<div class="footer-links">
+    <a href="https://huggingface.co/Ahmat293/camembert-sentiment-ynov" target="_blank">📜 Modèle original</a> ·
+    <a href="https://huggingface.co/Ahmat293/camembert-ynov-augmented" target="_blank">✨ Modèle augmenté</a> ·
+    <a href="https://github.com/aadamgk/camembert-sentiment-app" target="_blank">⌨ Code source</a>
+</div>
+<div style="text-align:center;color:#374151;font-size:0.7rem;letter-spacing:0.1em;margin-top:0.5rem">
+    YNOV SENTIMENT ANALYSER · CamemBERT original × augmenté · 2026
+</div>
+''', unsafe_allow_html=True)
