@@ -219,7 +219,7 @@ st.markdown("""
     backdrop-filter: blur(10px);
     transition: all 0.25s ease;
     position: relative;
-    height: 290px;
+    height: 340px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -357,7 +357,7 @@ st.markdown("""
     top: 0;
     left: 0;
     right: 0;
-    height: 290px;
+    height: 340px;
     margin: 0 !important;
     padding: 0 !important;
 }
