@@ -888,20 +888,27 @@ with col_history:
     st.markdown('<div class="section-title">🕐 Historique des analyses</div>', unsafe_allow_html=True)
 
     if st.session_state.new_comments:
-        # Mini stats
+        # Mini stats — afficher Neutres uniquement si présent (le modèle augmenté est binaire)
         sentiments = [c["sentiment"] for c in st.session_state.new_comments]
         n_pos = sentiments.count("positif")
         n_neg = sentiments.count("négatif")
         n_neu = sentiments.count("neutre")
         total_new = len(sentiments)
 
-        m1, m2, m3 = st.columns(3)
-        with m1:
-            st.markdown(f'<div class="metric-card"><div class="metric-number pos" style="font-size:1.8rem">{n_pos}</div><div class="metric-label">Positifs</div></div>', unsafe_allow_html=True)
-        with m2:
-            st.markdown(f'<div class="metric-card"><div class="metric-number neg" style="font-size:1.8rem">{n_neg}</div><div class="metric-label">Négatifs</div></div>', unsafe_allow_html=True)
-        with m3:
-            st.markdown(f'<div class="metric-card"><div class="metric-number neu" style="font-size:1.8rem">{n_neu}</div><div class="metric-label">Neutres</div></div>', unsafe_allow_html=True)
+        if n_neu > 0:
+            m1, m2, m3 = st.columns(3)
+            with m1:
+                st.markdown(f'<div class="metric-card"><div class="metric-number pos" style="font-size:1.8rem">{n_pos}</div><div class="metric-label">Positifs</div></div>', unsafe_allow_html=True)
+            with m2:
+                st.markdown(f'<div class="metric-card"><div class="metric-number neg" style="font-size:1.8rem">{n_neg}</div><div class="metric-label">Négatifs</div></div>', unsafe_allow_html=True)
+            with m3:
+                st.markdown(f'<div class="metric-card"><div class="metric-number neu" style="font-size:1.8rem">{n_neu}</div><div class="metric-label">Neutres</div></div>', unsafe_allow_html=True)
+        else:
+            m1, m2 = st.columns(2)
+            with m1:
+                st.markdown(f'<div class="metric-card"><div class="metric-number pos" style="font-size:1.8rem">{n_pos}</div><div class="metric-label">Positifs</div></div>', unsafe_allow_html=True)
+            with m2:
+                st.markdown(f'<div class="metric-card"><div class="metric-number neg" style="font-size:1.8rem">{n_neg}</div><div class="metric-label">Négatifs</div></div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
