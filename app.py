@@ -517,6 +517,208 @@ st.markdown("""
     align-items: center;
     gap: 0.4rem;
 }
+
+/* ─── Page Méthodologie ─── */
+.methodo-h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f0f0f5;
+    margin: 2.5rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.methodo-intro {
+    color: #d1d5db;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+/* ─── Diagramme architecture ─── */
+.arch-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 1.5rem 0;
+    padding: 1.5rem 1rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+}
+
+.arch-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.arch-row-2col { gap: 1.5rem; }
+
+.arch-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 0.9rem 1.2rem;
+    color: #e5e7eb;
+    font-size: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    text-align: center;
+    min-width: 200px;
+    max-width: 320px;
+    transition: all 0.2s ease;
+    line-height: 1.4;
+}
+
+.arch-box:hover {
+    border-color: rgba(167,139,250,0.4);
+    transform: translateY(-1px);
+}
+
+.arch-box-source { border-left: 3px solid #60a5fa; }
+.arch-box-llm    { border-left: 3px solid #a78bfa; background: rgba(167,139,250,0.08); }
+.arch-box-data   { border-left: 3px solid #34d399; background: rgba(52,211,153,0.08); }
+.arch-box-train  { border-left: 3px solid #fbbf24; background: rgba(251,191,36,0.08); }
+.arch-box-hf     { border-left: 3px solid #f97316; background: rgba(249,115,22,0.08); }
+.arch-box-app    { border-left: 3px solid #ec4899; background: rgba(236,72,153,0.08); }
+.arch-box-db     { border-left: 3px solid #14b8a6; background: rgba(20,184,166,0.08); }
+
+.arch-arrow {
+    color: #6b7280;
+    font-size: 1.4rem;
+    font-weight: 300;
+    line-height: 0.8;
+}
+
+.arch-arrow-h {
+    color: #6b7280;
+    font-size: 1.2rem;
+}
+
+/* ─── Pipeline étapes ─── */
+.pipeline-step {
+    display: flex;
+    gap: 1rem;
+    background: rgba(255,255,255,0.03);
+    border-left: 3px solid #a78bfa;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.6rem;
+}
+
+.pipeline-step-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #a78bfa;
+    line-height: 1;
+    min-width: 30px;
+}
+
+.pipeline-step-content { flex: 1; }
+
+.pipeline-step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f0f0f5;
+    margin-bottom: 0.2rem;
+}
+
+.pipeline-step-meta {
+    color: #6b7280;
+    font-size: 0.72rem;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pipeline-step-desc {
+    color: #d1d5db;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* ─── Stack technique ─── */
+.stack-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.6rem;
+}
+
+.stack-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #a78bfa;
+    margin-bottom: 0.4rem;
+}
+
+.stack-card-tools {
+    color: #d1d5db;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* ─── Limitations ─── */
+.limit-list { padding-left: 0; list-style: none; margin: 0.5rem 0; }
+.limit-list li {
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    position: relative;
+    color: #d1d5db;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+.limit-list li::before {
+    content: "⚠";
+    position: absolute;
+    left: 0;
+    color: #fbbf24;
+}
+
+/* ─── Ressources ─── */
+.resource-link {
+    display: block;
+    padding: 0.8rem 1.2rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: #d1d5db;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+.resource-link:hover {
+    border-color: rgba(167,139,250,0.4);
+    background: rgba(167,139,250,0.06);
+    color: #f0f0f5;
+}
+
+/* ─── st.tabs personnalisation ─── */
+[data-baseweb="tab-list"] { gap: 0.5rem; }
+
+button[data-baseweb="tab"] {
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 10px !important;
+    color: #9ca3af !important;
+    padding: 0.5rem 1.2rem !important;
+    font-family: 'Syne', sans-serif !important;
+    transition: all 0.2s ease !important;
+}
+
+button[data-baseweb="tab"][aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(167,139,250,0.15), rgba(96,165,250,0.10)) !important;
+    border-color: rgba(167,139,250,0.5) !important;
+    color: #f0f0f5 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -666,270 +868,279 @@ def load_data():
 
 df_source = load_data()
 
-if df_source is not None:
-    try:
-        if "sentiment_label" in df_source.columns:
-            counts = df_source["sentiment_label"].value_counts()
-            total = len(df_source)
-            pos = counts.get("positif", 0)
-            neg = counts.get("negatif", 0)
-            neu = counts.get("neutre", 0)
+# ─── Onglets ──────────────────────────────────────────────────────────────────
+tab_analyse, tab_methodo = st.tabs(["📊 Analyse", "📖 Méthodologie"])
 
-            # ─── Metrics ───────────────────────────────────────────────────────
-            st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-            st.markdown('<div class="section-title">📊 Vue d\'ensemble du dataset</div>', unsafe_allow_html=True)
+with tab_analyse:
 
-            c1, c2, c3, c4 = st.columns(4)
-            with c1:
-                st.markdown(f'<div class="metric-card"><div class="metric-number total">{total}</div><div class="metric-label">Total avis</div></div>', unsafe_allow_html=True)
-            with c2:
-                st.markdown(f'<div class="metric-card"><div class="metric-number pos">{pos}</div><div class="metric-label">Positifs · {pos/total*100:.0f}%</div></div>', unsafe_allow_html=True)
-            with c3:
-                st.markdown(f'<div class="metric-card"><div class="metric-number neg">{neg}</div><div class="metric-label">Négatifs · {neg/total*100:.0f}%</div></div>', unsafe_allow_html=True)
-            with c4:
-                st.markdown(f'<div class="metric-card"><div class="metric-number neu">{neu}</div><div class="metric-label">Neutres · {neu/total*100:.0f}%</div></div>', unsafe_allow_html=True)
+    if df_source is not None:
+        try:
+            if "sentiment_label" in df_source.columns:
+                counts = df_source["sentiment_label"].value_counts()
+                total = len(df_source)
+                pos = counts.get("positif", 0)
+                neg = counts.get("negatif", 0)
+                neu = counts.get("neutre", 0)
 
-            st.markdown("<br>", unsafe_allow_html=True)
+                # ─── Metrics ───────────────────────────────────────────────────────
+                st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+                st.markdown('<div class="section-title">📊 Vue d\'ensemble du dataset</div>', unsafe_allow_html=True)
 
-            # ─── Charts ────────────────────────────────────────────────────────
-            col_left, col_right = st.columns([1, 1])
+                c1, c2, c3, c4 = st.columns(4)
+                with c1:
+                    st.markdown(f'<div class="metric-card"><div class="metric-number total">{total}</div><div class="metric-label">Total avis</div></div>', unsafe_allow_html=True)
+                with c2:
+                    st.markdown(f'<div class="metric-card"><div class="metric-number pos">{pos}</div><div class="metric-label">Positifs · {pos/total*100:.0f}%</div></div>', unsafe_allow_html=True)
+                with c3:
+                    st.markdown(f'<div class="metric-card"><div class="metric-number neg">{neg}</div><div class="metric-label">Négatifs · {neg/total*100:.0f}%</div></div>', unsafe_allow_html=True)
+                with c4:
+                    st.markdown(f'<div class="metric-card"><div class="metric-number neu">{neu}</div><div class="metric-label">Neutres · {neu/total*100:.0f}%</div></div>', unsafe_allow_html=True)
 
-            with col_left:
-                fig_donut = go.Figure(data=[go.Pie(
-                    labels=["Positif", "Négatif", "Neutre"],
-                    values=[pos, neg, neu],
-                    hole=0.65,
-                    marker_colors=["#34d399", "#f87171", "#60a5fa"],
-                    textinfo="none",
-                    hovertemplate="<b>%{label}</b><br>%{value} avis (%{percent})<extra></extra>"
-                )])
-                fig_donut.update_layout(
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    font_color="#9ca3af",
-                    showlegend=True,
-                    legend=dict(font=dict(size=12, color="#9ca3af"), bgcolor="rgba(0,0,0,0)"),
-                    margin=dict(t=20, b=20, l=20, r=20),
-                    annotations=[dict(text=f"<b>{total}</b><br><span style='font-size:10px'>avis</span>",
-                                      x=0.5, y=0.5, font_size=20, font_color="#f0f0f5", showarrow=False)]
-                )
-                st.plotly_chart(fig_donut, use_container_width=True)
+                st.markdown("<br>", unsafe_allow_html=True)
 
-            with col_right:
-                # Distribution des notes (1 à 5 étoiles) — granularité plus fine que le sentiment
-                if "rating" in df_source.columns:
-                    rating_counts = df_source["rating"].value_counts().sort_index()
-                    # Couleur selon le mapping rating → sentiment (1-2 rouge, 3 bleu, 4-5 vert)
-                    rating_colors = {1: "#f87171", 2: "#fb923c", 3: "#60a5fa", 4: "#86efac", 5: "#34d399"}
-                    colors = [rating_colors.get(int(r), "#9ca3af") for r in rating_counts.index]
-                    labels = [f"{r}★" for r in rating_counts.index]
+                # ─── Charts ────────────────────────────────────────────────────────
+                col_left, col_right = st.columns([1, 1])
 
-                    fig_rating = go.Figure(go.Bar(
-                        x=labels,
-                        y=rating_counts.values,
-                        marker_color=colors,
-                        text=rating_counts.values,
-                        textposition="outside",
-                        textfont=dict(color="#f0f0f5", size=12),
-                    ))
-                    fig_rating.update_layout(
-                        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                with col_left:
+                    fig_donut = go.Figure(data=[go.Pie(
+                        labels=["Positif", "Négatif", "Neutre"],
+                        values=[pos, neg, neu],
+                        hole=0.65,
+                        marker_colors=["#34d399", "#f87171", "#60a5fa"],
+                        textinfo="none",
+                        hovertemplate="<b>%{label}</b><br>%{value} avis (%{percent})<extra></extra>"
+                    )])
+                    fig_donut.update_layout(
+                        paper_bgcolor="rgba(0,0,0,0)",
+                        plot_bgcolor="rgba(0,0,0,0)",
                         font_color="#9ca3af",
-                        showlegend=False,
-                        xaxis=dict(showgrid=False, color="#9ca3af"),
-                        yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)", color="#4b5563"),
-                        margin=dict(t=40, b=20, l=10, r=10),
-                        title=dict(text="Distribution des notes (1-5 ★)", font=dict(size=13, color="#9ca3af"), x=0, xanchor="left")
+                        showlegend=True,
+                        legend=dict(font=dict(size=12, color="#9ca3af"), bgcolor="rgba(0,0,0,0)"),
+                        margin=dict(t=20, b=20, l=20, r=20),
+                        annotations=[dict(text=f"<b>{total}</b><br><span style='font-size:10px'>avis</span>",
+                                          x=0.5, y=0.5, font_size=20, font_color="#f0f0f5", showarrow=False)]
                     )
-                    st.plotly_chart(fig_rating, use_container_width=True)
+                    st.plotly_chart(fig_donut, use_container_width=True)
 
-    except Exception as e:
-        st.error(f"Erreur lors du chargement : {e}")
+                with col_right:
+                    # Distribution des notes (1 à 5 étoiles) — granularité plus fine que le sentiment
+                    if "rating" in df_source.columns:
+                        rating_counts = df_source["rating"].value_counts().sort_index()
+                        # Couleur selon le mapping rating → sentiment (1-2 rouge, 3 bleu, 4-5 vert)
+                        rating_colors = {1: "#f87171", 2: "#fb923c", 3: "#60a5fa", 4: "#86efac", 5: "#34d399"}
+                        colors = [rating_colors.get(int(r), "#9ca3af") for r in rating_counts.index]
+                        labels = [f"{r}★" for r in rating_counts.index]
 
-# ─── Analyse ───────────────────────────────────────────────────────────────────
-st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+                        fig_rating = go.Figure(go.Bar(
+                            x=labels,
+                            y=rating_counts.values,
+                            marker_color=colors,
+                            text=rating_counts.values,
+                            textposition="outside",
+                            textfont=dict(color="#f0f0f5", size=12),
+                        ))
+                        fig_rating.update_layout(
+                            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                            font_color="#9ca3af",
+                            showlegend=False,
+                            xaxis=dict(showgrid=False, color="#9ca3af"),
+                            yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)", color="#4b5563"),
+                            margin=dict(t=40, b=20, l=10, r=10),
+                            title=dict(text="Distribution des notes (1-5 ★)", font=dict(size=13, color="#9ca3af"), x=0, xanchor="left")
+                        )
+                        st.plotly_chart(fig_rating, use_container_width=True)
 
-col_input, col_history = st.columns([1, 1], gap="large")
+        except Exception as e:
+            st.error(f"Erreur lors du chargement : {e}")
 
-def render_model_card(model_name, is_selected):
-    cfg = MODELS[model_name]
-    selected_class = "selected" if is_selected else ""
-    is_comparison = cfg.get("is_comparison", False)
+    # ─── Analyse ───────────────────────────────────────────────────────────────────
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-    if is_comparison:
+    col_input, col_history = st.columns([1, 1], gap="large")
+
+    def render_model_card(model_name, is_selected):
+        cfg = MODELS[model_name]
+        selected_class = "selected" if is_selected else ""
+        is_comparison = cfg.get("is_comparison", False)
+
+        if is_comparison:
+            return f"""
+            <div class="model-card comparison-card {selected_class}">
+                <div class="model-card-header">
+                    <span class="model-card-emoji">{cfg['emoji']}</span>
+                    <span class="model-card-title">Comparer</span>
+                </div>
+                <div class="model-card-subtitle">{cfg['subtitle']}</div>
+                <div class="comparison-badge-row">
+                    <span class="comparison-vs-icon">⚖️</span>
+                </div>
+                <div class="model-card-desc">{cfg['description']}</div>
+            </div>
+            """
+
+        acc = f"{cfg['accuracy']*100:.0f}%" if cfg['accuracy'] is not None else "—"
+        f1 = f"{cfg['f1_macro']:.2f}" if cfg['f1_macro'] is not None else "—"
+        short_title = "Original" if "original" in model_name.lower() else "Augmenté"
+
         return f"""
-        <div class="model-card comparison-card {selected_class}">
+        <div class="model-card {selected_class}">
             <div class="model-card-header">
                 <span class="model-card-emoji">{cfg['emoji']}</span>
-                <span class="model-card-title">Comparer</span>
+                <span class="model-card-title">{short_title}</span>
             </div>
-            <div class="model-card-subtitle">{cfg['subtitle']}</div>
-            <div class="comparison-badge-row">
-                <span class="comparison-vs-icon">⚖️</span>
+            <div class="model-card-subtitle">{cfg['num_classes']} classes</div>
+            <div class="model-card-badges">
+                <div class="model-badge">
+                    <div class="model-badge-label">Acc</div>
+                    <div class="model-badge-value">{acc}</div>
+                </div>
+                <div class="model-badge">
+                    <div class="model-badge-label">F1</div>
+                    <div class="model-badge-value">{f1}</div>
+                </div>
             </div>
             <div class="model-card-desc">{cfg['description']}</div>
+            <a href="{cfg['hf_url']}" target="_blank" class="model-card-link">↗ Hugging Face</a>
         </div>
         """
 
-    acc = f"{cfg['accuracy']*100:.0f}%" if cfg['accuracy'] is not None else "—"
-    f1 = f"{cfg['f1_macro']:.2f}" if cfg['f1_macro'] is not None else "—"
-    short_title = "Original" if "original" in model_name.lower() else "Augmenté"
+    with col_input:
+        st.markdown('<div class="section-title">✍️ Analyser un commentaire</div>', unsafe_allow_html=True)
 
-    return f"""
-    <div class="model-card {selected_class}">
-        <div class="model-card-header">
-            <span class="model-card-emoji">{cfg['emoji']}</span>
-            <span class="model-card-title">{short_title}</span>
-        </div>
-        <div class="model-card-subtitle">{cfg['num_classes']} classes</div>
-        <div class="model-card-badges">
-            <div class="model-badge">
-                <div class="model-badge-label">Acc</div>
-                <div class="model-badge-value">{acc}</div>
-            </div>
-            <div class="model-badge">
-                <div class="model-badge-label">F1</div>
-                <div class="model-badge-value">{f1}</div>
-            </div>
-        </div>
-        <div class="model-card-desc">{cfg['description']}</div>
-        <a href="{cfg['hf_url']}" target="_blank" class="model-card-link">↗ Hugging Face</a>
-    </div>
-    """
+        # ─── Sélecteur de modèle en cards ─────────────────────────────────────
+        st.markdown('<div class="model-selector-row">', unsafe_allow_html=True)
+        model_names = list(MODELS.keys())
+        card_cols = st.columns(len(model_names))
+        for col, name in zip(card_cols, model_names):
+            with col:
+                is_selected = (st.session_state.selected_model == name)
+                st.markdown(render_model_card(name, is_selected), unsafe_allow_html=True)
+                if st.button(f"select_{name}", key=f"btn_{name}"):
+                    st.session_state.selected_model = name
+                    st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-with col_input:
-    st.markdown('<div class="section-title">✍️ Analyser un commentaire</div>', unsafe_allow_html=True)
+        selected_model_name = st.session_state.selected_model
+        selected_config = MODELS[selected_model_name]
+        is_comparison = selected_config.get("is_comparison", False)
+        button_label = "Comparer les modèles" if is_comparison else "Analyser le sentiment"
 
-    # ─── Sélecteur de modèle en cards ─────────────────────────────────────
-    st.markdown('<div class="model-selector-row">', unsafe_allow_html=True)
-    model_names = list(MODELS.keys())
-    card_cols = st.columns(len(model_names))
-    for col, name in zip(card_cols, model_names):
-        with col:
-            is_selected = (st.session_state.selected_model == name)
-            st.markdown(render_model_card(name, is_selected), unsafe_allow_html=True)
-            if st.button(f"select_{name}", key=f"btn_{name}"):
-                st.session_state.selected_model = name
-                st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+        comment = st.text_area("", placeholder="Entrez un avis étudiant...", height=130, label_visibility="collapsed")
 
-    selected_model_name = st.session_state.selected_model
-    selected_config = MODELS[selected_model_name]
-    is_comparison = selected_config.get("is_comparison", False)
-    button_label = "Comparer les modèles" if is_comparison else "Analyser le sentiment"
+        if st.button(button_label, key="analyze_btn"):
+            if comment.strip():
+                if is_comparison:
+                    with st.spinner("Comparaison des 2 modèles..."):
+                        results, verdict, verdict_text = predict_dual(comment)
 
-    comment = st.text_area("", placeholder="Entrez un avis étudiant...", height=130, label_visibility="collapsed")
+                    render_dual_result(results, verdict, verdict_text)
 
-    if st.button(button_label, key="analyze_btn"):
-        if comment.strip():
-            if is_comparison:
-                with st.spinner("Comparaison des 2 modèles..."):
-                    results, verdict, verdict_text = predict_dual(comment)
+                    # Persist + history pour les 2 modèles
+                    for model_name, r in results.items():
+                        short_comment = comment[:60] + "..." if len(comment) > 60 else comment
+                        st.session_state.new_comments.append({
+                            "comment": short_comment,
+                            "sentiment": r["sentiment"],
+                            "confidence": r["confidence"],
+                            "time": datetime.now().strftime("%H:%M"),
+                            "model": model_name,
+                        })
+                        save_prediction(
+                            comment=comment,
+                            sentiment=r["sentiment"],
+                            confidence=r["confidence"],
+                            model_name=model_name,
+                            model_id=r["model_id"],
+                        )
+                else:
+                    with st.spinner("Analyse en cours..."):
+                        classifier = load_model(selected_config["id"], selected_config["subfolder"], selected_config["tokenizer_subfolder"])
+                        sentiment, confidence = predict(comment, classifier, selected_config["label_map"])
 
-                render_dual_result(results, verdict, verdict_text)
+                    css_class = {"positif": "result-pos", "négatif": "result-neg", "neutre": "result-neu"}.get(sentiment, "result-neu")
+                    icon = {"positif": "😊", "négatif": "😞", "neutre": "😐"}.get(sentiment, "😐")
+                    bar_gradient = {
+                        "positif": "linear-gradient(90deg, #34d399, #10b981)",
+                        "négatif": "linear-gradient(90deg, #f87171, #ef4444)",
+                        "neutre":  "linear-gradient(90deg, #60a5fa, #3b82f6)",
+                    }.get(sentiment, "linear-gradient(90deg, #60a5fa, #3b82f6)")
 
-                # Persist + history pour les 2 modèles
-                for model_name, r in results.items():
-                    short_comment = comment[:60] + "..." if len(comment) > 60 else comment
+                    st.markdown(f'<div class="result-box {css_class}">{icon} <span>{sentiment.upper()}</span></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="confidence-bar-track"><div class="confidence-bar-fill" style="width:{confidence}%;background:{bar_gradient}"></div></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="confidence-bar-label">{confidence}% de confiance</div>', unsafe_allow_html=True)
+
                     st.session_state.new_comments.append({
-                        "comment": short_comment,
-                        "sentiment": r["sentiment"],
-                        "confidence": r["confidence"],
+                        "comment": comment[:60] + "..." if len(comment) > 60 else comment,
+                        "sentiment": sentiment,
+                        "confidence": confidence,
                         "time": datetime.now().strftime("%H:%M"),
-                        "model": model_name,
+                        "model": selected_model_name,
                     })
+
                     save_prediction(
                         comment=comment,
-                        sentiment=r["sentiment"],
-                        confidence=r["confidence"],
-                        model_name=model_name,
-                        model_id=r["model_id"],
+                        sentiment=sentiment,
+                        confidence=confidence,
+                        model_name=selected_model_name,
+                        model_id=selected_config["id"],
                     )
             else:
-                with st.spinner("Analyse en cours..."):
-                    classifier = load_model(selected_config["id"], selected_config["subfolder"], selected_config["tokenizer_subfolder"])
-                    sentiment, confidence = predict(comment, classifier, selected_config["label_map"])
+                st.warning("Entrez un commentaire d'abord.")
 
-                css_class = {"positif": "result-pos", "négatif": "result-neg", "neutre": "result-neu"}.get(sentiment, "result-neu")
-                icon = {"positif": "😊", "négatif": "😞", "neutre": "😐"}.get(sentiment, "😐")
-                bar_gradient = {
-                    "positif": "linear-gradient(90deg, #34d399, #10b981)",
-                    "négatif": "linear-gradient(90deg, #f87171, #ef4444)",
-                    "neutre":  "linear-gradient(90deg, #60a5fa, #3b82f6)",
-                }.get(sentiment, "linear-gradient(90deg, #60a5fa, #3b82f6)")
+    with col_history:
+        st.markdown('<div class="section-title">🕐 Historique des analyses</div>', unsafe_allow_html=True)
 
-                st.markdown(f'<div class="result-box {css_class}">{icon} <span>{sentiment.upper()}</span></div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="confidence-bar-track"><div class="confidence-bar-fill" style="width:{confidence}%;background:{bar_gradient}"></div></div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="confidence-bar-label">{confidence}% de confiance</div>', unsafe_allow_html=True)
+        if st.session_state.new_comments:
+            # Mini stats — afficher Neutres uniquement si présent (le modèle augmenté est binaire)
+            sentiments = [c["sentiment"] for c in st.session_state.new_comments]
+            n_pos = sentiments.count("positif")
+            n_neg = sentiments.count("négatif")
+            n_neu = sentiments.count("neutre")
+            total_new = len(sentiments)
 
-                st.session_state.new_comments.append({
-                    "comment": comment[:60] + "..." if len(comment) > 60 else comment,
-                    "sentiment": sentiment,
-                    "confidence": confidence,
-                    "time": datetime.now().strftime("%H:%M"),
-                    "model": selected_model_name,
-                })
-
-                save_prediction(
-                    comment=comment,
-                    sentiment=sentiment,
-                    confidence=confidence,
-                    model_name=selected_model_name,
-                    model_id=selected_config["id"],
-                )
-        else:
-            st.warning("Entrez un commentaire d'abord.")
-
-with col_history:
-    st.markdown('<div class="section-title">🕐 Historique des analyses</div>', unsafe_allow_html=True)
-
-    if st.session_state.new_comments:
-        # Mini stats — afficher Neutres uniquement si présent (le modèle augmenté est binaire)
-        sentiments = [c["sentiment"] for c in st.session_state.new_comments]
-        n_pos = sentiments.count("positif")
-        n_neg = sentiments.count("négatif")
-        n_neu = sentiments.count("neutre")
-        total_new = len(sentiments)
-
-        if n_neu > 0:
-            m1, m2, m3 = st.columns(3)
-            with m1:
-                st.markdown(f'<div class="metric-card"><div class="metric-number pos" style="font-size:1.8rem">{n_pos}</div><div class="metric-label">Positifs</div></div>', unsafe_allow_html=True)
-            with m2:
-                st.markdown(f'<div class="metric-card"><div class="metric-number neg" style="font-size:1.8rem">{n_neg}</div><div class="metric-label">Négatifs</div></div>', unsafe_allow_html=True)
-            with m3:
-                st.markdown(f'<div class="metric-card"><div class="metric-number neu" style="font-size:1.8rem">{n_neu}</div><div class="metric-label">Neutres</div></div>', unsafe_allow_html=True)
-        else:
-            m1, m2 = st.columns(2)
-            with m1:
-                st.markdown(f'<div class="metric-card"><div class="metric-number pos" style="font-size:1.8rem">{n_pos}</div><div class="metric-label">Positifs</div></div>', unsafe_allow_html=True)
-            with m2:
-                st.markdown(f'<div class="metric-card"><div class="metric-number neg" style="font-size:1.8rem">{n_neg}</div><div class="metric-label">Négatifs</div></div>', unsafe_allow_html=True)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-
-        for item in reversed(st.session_state.new_comments[-8:]):
-            badge_class = {"positif": "badge-pos", "négatif": "badge-neg", "neutre": "badge-neu"}.get(item["sentiment"], "badge-neu")
-            item_model = item.get("model", "")
-            if "augmenté" in item_model.lower():
-                model_class = "comment-item-augmented"
-                model_icon = "✨"
+            if n_neu > 0:
+                m1, m2, m3 = st.columns(3)
+                with m1:
+                    st.markdown(f'<div class="metric-card"><div class="metric-number pos" style="font-size:1.8rem">{n_pos}</div><div class="metric-label">Positifs</div></div>', unsafe_allow_html=True)
+                with m2:
+                    st.markdown(f'<div class="metric-card"><div class="metric-number neg" style="font-size:1.8rem">{n_neg}</div><div class="metric-label">Négatifs</div></div>', unsafe_allow_html=True)
+                with m3:
+                    st.markdown(f'<div class="metric-card"><div class="metric-number neu" style="font-size:1.8rem">{n_neu}</div><div class="metric-label">Neutres</div></div>', unsafe_allow_html=True)
             else:
-                model_class = "comment-item-original"
-                model_icon = "📜"
-            st.markdown(f'''
-            <div class="comment-item {model_class}">
-                <span class="history-model-icon">{model_icon}</span>
-                <span style="color:#d1d5db;flex:1">{item["comment"]}</span>
-                <span style="color:#4b5563;font-size:0.75rem;margin:0 0.8rem">{item["time"]}</span>
-                <span class="badge {badge_class}">{item["sentiment"]}</span>
-            </div>''', unsafe_allow_html=True)
+                m1, m2 = st.columns(2)
+                with m1:
+                    st.markdown(f'<div class="metric-card"><div class="metric-number pos" style="font-size:1.8rem">{n_pos}</div><div class="metric-label">Positifs</div></div>', unsafe_allow_html=True)
+                with m2:
+                    st.markdown(f'<div class="metric-card"><div class="metric-number neg" style="font-size:1.8rem">{n_neg}</div><div class="metric-label">Négatifs</div></div>', unsafe_allow_html=True)
 
-        if st.button("Effacer l'historique"):
-            st.session_state.new_comments = []
-            st.rerun()
-    else:
-        st.markdown('<div style="color:#4b5563;text-align:center;padding:3rem 0;font-size:0.9rem">Aucune analyse encore effectuée</div>', unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            for item in reversed(st.session_state.new_comments[-8:]):
+                badge_class = {"positif": "badge-pos", "négatif": "badge-neg", "neutre": "badge-neu"}.get(item["sentiment"], "badge-neu")
+                item_model = item.get("model", "")
+                if "augmenté" in item_model.lower():
+                    model_class = "comment-item-augmented"
+                    model_icon = "✨"
+                else:
+                    model_class = "comment-item-original"
+                    model_icon = "📜"
+                st.markdown(f'''
+                <div class="comment-item {model_class}">
+                    <span class="history-model-icon">{model_icon}</span>
+                    <span style="color:#d1d5db;flex:1">{item["comment"]}</span>
+                    <span style="color:#4b5563;font-size:0.75rem;margin:0 0.8rem">{item["time"]}</span>
+                    <span class="badge {badge_class}">{item["sentiment"]}</span>
+                </div>''', unsafe_allow_html=True)
+
+            if st.button("Effacer l'historique"):
+                st.session_state.new_comments = []
+                st.rerun()
+        else:
+            st.markdown('<div style="color:#4b5563;text-align:center;padding:3rem 0;font-size:0.9rem">Aucune analyse encore effectuée</div>', unsafe_allow_html=True)
+
+
+with tab_methodo:
+    st.markdown("**Page méthodologie en construction.**")
 
 # ─── Footer ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
