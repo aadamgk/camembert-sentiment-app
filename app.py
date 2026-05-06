@@ -215,14 +215,14 @@ st.markdown("""
     background: rgba(255,255,255,0.04);
     border: 2px solid rgba(255,255,255,0.08);
     border-radius: 16px;
-    padding: 1.4rem 1.3rem 1.1rem 1.3rem;
+    padding: 1.2rem 1.1rem 1rem 1.1rem;
     backdrop-filter: blur(10px);
     transition: all 0.25s ease;
     position: relative;
-    min-height: 360px;
+    height: 280px;
     display: flex;
     flex-direction: column;
-    overflow: visible;
+    overflow: hidden;
     box-sizing: border-box;
 }
 
@@ -354,17 +354,12 @@ st.markdown("""
     position: relative;
 }
 
-.model-selector-row [data-testid="column"] {
-    height: auto !important;
-}
-
 .model-selector-row [data-testid="column"] .stButton {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    height: 100%;
+    height: 280px;
     margin: 0 !important;
     padding: 0 !important;
 }
@@ -773,7 +768,7 @@ def render_model_card(model_name, is_selected):
         <div class="model-card comparison-card {selected_class}">
             <div class="model-card-header">
                 <span class="model-card-emoji">{cfg['emoji']}</span>
-                <span class="model-card-title">{model_name}</span>
+                <span class="model-card-title">Comparer</span>
             </div>
             <div class="model-card-subtitle">{cfg['subtitle']}</div>
             <div class="comparison-badge-row">
@@ -783,28 +778,29 @@ def render_model_card(model_name, is_selected):
         </div>
         """
 
-    acc = f"{cfg['accuracy']*100:.1f}%" if cfg['accuracy'] is not None else "—"
-    f1 = f"{cfg['f1_macro']:.3f}" if cfg['f1_macro'] is not None else "—"
+    acc = f"{cfg['accuracy']*100:.0f}%" if cfg['accuracy'] is not None else "—"
+    f1 = f"{cfg['f1_macro']:.2f}" if cfg['f1_macro'] is not None else "—"
+    short_title = "Original" if "original" in model_name.lower() else "Augmenté"
 
     return f"""
     <div class="model-card {selected_class}">
         <div class="model-card-header">
             <span class="model-card-emoji">{cfg['emoji']}</span>
-            <span class="model-card-title">{model_name}</span>
+            <span class="model-card-title">{short_title}</span>
         </div>
-        <div class="model-card-subtitle">{cfg['base_model']} · {cfg['num_classes']} classes</div>
+        <div class="model-card-subtitle">{cfg['num_classes']} classes</div>
         <div class="model-card-badges">
             <div class="model-badge">
-                <div class="model-badge-label">Accuracy</div>
+                <div class="model-badge-label">Acc</div>
                 <div class="model-badge-value">{acc}</div>
             </div>
             <div class="model-badge">
-                <div class="model-badge-label">F1 macro</div>
+                <div class="model-badge-label">F1</div>
                 <div class="model-badge-value">{f1}</div>
             </div>
         </div>
         <div class="model-card-desc">{cfg['description']}</div>
-        <a href="{cfg['hf_url']}" target="_blank" class="model-card-link">→ voir sur Hugging Face</a>
+        <a href="{cfg['hf_url']}" target="_blank" class="model-card-link">↗ Hugging Face</a>
     </div>
     """
 
