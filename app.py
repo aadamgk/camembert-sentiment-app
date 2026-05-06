@@ -1140,7 +1140,221 @@ with tab_analyse:
 
 
 with tab_methodo:
-    st.markdown("**Page méthodologie en construction.**")
+    # ─── Section 1 : En bref ──────────────────────────────────────────────
+    st.markdown('<div class="methodo-h2">📌 En bref</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="methodo-intro">'
+        'Cette application classe automatiquement les avis étudiants Ynov en <strong>positif</strong> ou <strong>négatif</strong>, '
+        'en s\'appuyant sur <strong>CamemBERT</strong>, un modèle d\'IA français open source. À partir de 550 vrais avis Google Maps, '
+        'on a entraîné un modèle spécialisé qui atteint <strong>98% de précision</strong> sur le domaine éducatif Ynov.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    kpi1, kpi2, kpi3 = st.columns(3)
+    with kpi1:
+        st.markdown(
+            '<div class="metric-card"><div class="metric-number total">394</div>'
+            '<div class="metric-label">Avis dans le dataset</div></div>',
+            unsafe_allow_html=True
+        )
+    with kpi2:
+        st.markdown(
+            '<div class="metric-card"><div class="metric-number neu">2</div>'
+            '<div class="metric-label">Modèles comparés</div></div>',
+            unsafe_allow_html=True
+        )
+    with kpi3:
+        st.markdown(
+            '<div class="metric-card"><div class="metric-number pos">98.3%</div>'
+            '<div class="metric-label">Accuracy test set</div></div>',
+            unsafe_allow_html=True
+        )
+
+    # ─── Section 2 : Architecture du projet ──────────────────────────────
+    st.markdown('<div class="methodo-h2">🏗️ Architecture du projet</div>', unsafe_allow_html=True)
+    st.markdown('''
+    <div class="arch-diagram">
+        <div class="arch-row">
+            <div class="arch-box arch-box-source">📊 <strong>Source Google Maps</strong><br><span style="color:#9ca3af;font-size:0.75rem">avis_ynov_All_final.csv · 550 lignes</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+
+        <div class="arch-row arch-row-2col">
+            <div class="arch-box">🧹 <strong>Filtrage</strong><br><span style="color:#9ca3af;font-size:0.75rem">383 lignes valides</span></div>
+            <div class="arch-arrow-h">→</div>
+            <div class="arch-box arch-box-llm">🤖 <strong>Augmentation LLM</strong><br><span style="color:#9ca3af;font-size:0.75rem">+100 négatifs synthétiques (Claude)</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+
+        <div class="arch-row">
+            <div class="arch-box arch-box-data">📦 <strong>Dataset équilibré</strong><br><span style="color:#9ca3af;font-size:0.75rem">avis_ynov_augmented.csv · 197/197 binaire</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+
+        <div class="arch-row">
+            <div class="arch-box arch-box-train">🎓 <strong>Fine-tuning CamemBERT</strong><br><span style="color:#9ca3af;font-size:0.75rem">Colab T4 · 5 epochs · ~6 min</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+
+        <div class="arch-row arch-row-2col">
+            <div class="arch-box arch-box-hf">🤗 <strong>HF Hub : original</strong><br><span style="color:#9ca3af;font-size:0.75rem">3 classes (pos/neu/neg)</span></div>
+            <div class="arch-box arch-box-hf">🤗 <strong>HF Hub : augmenté</strong><br><span style="color:#9ca3af;font-size:0.75rem">2 classes (binaire)</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+
+        <div class="arch-row">
+            <div class="arch-box arch-box-app">💻 <strong>App Streamlit</strong><br><span style="color:#9ca3af;font-size:0.75rem">Comparaison live des 2 modèles</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+
+        <div class="arch-row">
+            <div class="arch-box arch-box-db">🗄️ <strong>Supabase PostgreSQL</strong><br><span style="color:#9ca3af;font-size:0.75rem">Table predictions · analytics futures</span></div>
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+    # ─── Section 3 : Pipeline en 5 étapes ────────────────────────────────
+    st.markdown('<div class="methodo-h2">🔄 Pipeline en 5 étapes</div>', unsafe_allow_html=True)
+
+    pipeline_steps = [
+        {
+            "num": "1",
+            "title": "Collecte des avis",
+            "meta": "Pré-existant",
+            "desc": "550 avis scrapés depuis Google Maps des campus Ynov, livrés au format CSV avec colonnes (author, rating, sentiment_label, date, comment)."
+        },
+        {
+            "num": "2",
+            "title": "Augmentation par LLM",
+            "meta": "~30 minutes",
+            "desc": "Génération de 100 avis négatifs synthétiques par Claude, calibrés sur le style des vrais avis Ynov (11 campus, 10 filières, 8+ angles différents). Combinés avec 97 vrais négatifs et 197 positifs échantillonnés → dataset binaire équilibré 197/197."
+        },
+        {
+            "num": "3",
+            "title": "Fine-tuning CamemBERT",
+            "meta": "~6 minutes sur Colab T4",
+            "desc": "CamemBERT base (110M paramètres), 5 epochs, learning rate 2e-5, batch size 16, weight decay 0.01, warmup ratio 0.1. Split stratifié 70/15/15 sur sentiment×source. Métriques évaluées par epoch sur la validation."
+        },
+        {
+            "num": "4",
+            "title": "Déploiement",
+            "meta": "~5 minutes",
+            "desc": "Push automatique du modèle sur Hugging Face Hub via model.push_to_hub(). App Streamlit déployée sur Streamlit Cloud, charge les modèles à la volée depuis HF Hub. Aucun modèle hébergé dans le repo Git."
+        },
+        {
+            "num": "5",
+            "title": "Persistance des prédictions",
+            "meta": "Continu",
+            "desc": "Chaque prédiction utilisateur est insérée dans Supabase (table predictions) en best-effort, pour analytics futures. La table accumule comment, sentiment prédit, confidence, modèle utilisé et timestamp."
+        },
+    ]
+
+    for step in pipeline_steps:
+        st.markdown(f'''
+        <div class="pipeline-step">
+            <div class="pipeline-step-num">{step["num"]}</div>
+            <div class="pipeline-step-content">
+                <div class="pipeline-step-title">{step["title"]}</div>
+                <div class="pipeline-step-meta">{step["meta"]}</div>
+                <div class="pipeline-step-desc">{step["desc"]}</div>
+            </div>
+        </div>
+        ''', unsafe_allow_html=True)
+
+    # ─── Section 4 : Résultats détaillés ─────────────────────────────────
+    st.markdown('<div class="methodo-h2">📈 Résultats détaillés</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="methodo-intro">Métriques mesurées sur le test set (60 avis : 45 réels + 15 synthétiques) après 5 epochs de fine-tuning du modèle augmenté.</div>',
+        unsafe_allow_html=True
+    )
+
+    metrics_df = pd.DataFrame({
+        "Métrique":  ["Accuracy", "F1 macro", "F1 négatif", "F1 positif", "n test"],
+        "Global":    ["98.3%",    "0.9833",   "0.9831",     "0.9836",     "60"],
+        "Real":      ["97.8%",    "0.9746",   "0.9655",     "0.9836",     "45"],
+        "Synthetic": ["100.0%",   "1.0000",   "1.0000",     "—",          "15"],
+    })
+    st.dataframe(metrics_df, hide_index=True, use_container_width=True)
+
+    st.markdown(
+        '<div class="methodo-intro" style="font-size:0.85rem">'
+        '<em>L\'écart real / synthetic est de 2,5 points → biais de génération minimal. '
+        'Le F1 positif sur le subset synthetic est noté "—" car aucun avis positif synthétique n\'existe '
+        '(on a généré uniquement des négatifs).</em>'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="methodo-h2" style="font-size:1.1rem;margin-top:1.5rem">Matrice de confusion (test global)</div>', unsafe_allow_html=True)
+
+    cm_values = [[29, 1], [0, 30]]
+    cm_labels = ["négatif", "positif"]
+    fig_cm = go.Figure(data=go.Heatmap(
+        z=cm_values,
+        x=cm_labels,
+        y=cm_labels,
+        text=cm_values,
+        texttemplate="%{text}",
+        textfont=dict(size=18, color="#f0f0f5"),
+        colorscale=[[0, "rgba(167,139,250,0.05)"], [1, "rgba(167,139,250,0.6)"]],
+        showscale=False,
+        hoverongaps=False,
+    ))
+    fig_cm.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="#9ca3af",
+        xaxis=dict(title="Prédit", side="bottom"),
+        yaxis=dict(title="Réel", autorange="reversed"),
+        margin=dict(t=20, b=40, l=60, r=20),
+        height=320,
+    )
+    st.plotly_chart(fig_cm, use_container_width=True)
+
+    # ─── Section 5 : Stack technique ─────────────────────────────────────
+    st.markdown('<div class="methodo-h2">🛠️ Stack technique</div>', unsafe_allow_html=True)
+
+    stack = [
+        ("🤖 ML",       "Transformers · PyTorch · CamemBERT · scikit-learn"),
+        ("🎨 Frontend", "Streamlit · Plotly · HTML/CSS custom"),
+        ("☁️ Hosting",  "Streamlit Cloud · Hugging Face Hub"),
+        ("🗄️ Data",     "Pandas · CSV · Supabase (PostgreSQL)"),
+        ("🛠️ Ops",      "Git · GitHub · Google Colab · Claude Code"),
+    ]
+    for cat, tools in stack:
+        st.markdown(f'''
+        <div class="stack-card">
+            <div class="stack-card-title">{cat}</div>
+            <div class="stack-card-tools">{tools}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+
+    # ─── Section 6 : Limitations honnêtes ────────────────────────────────
+    st.markdown('<div class="methodo-h2">⚠️ Limitations honnêtes</div>', unsafe_allow_html=True)
+    st.markdown('''
+    <ul class="limit-list">
+        <li><strong>Labels mécaniques</strong> : sentiment_label est dérivé du rating (1-2 → négatif, 3 → neutre, 4-5 → positif), pas annoté indépendamment du texte.</li>
+        <li><strong>Synthetic mono-source</strong> : les 100 négatifs synthétiques sont produits par un seul LLM (Claude), risque de signature stylistique détectable.</li>
+        <li><strong>Taille modeste</strong> : 394 avis suffisent pour un POC ; pour la production, viser 1000+ par classe avec scrap réel.</li>
+        <li><strong>Validation à 100% dès l'epoch 2</strong> : signal possible d'un val set trop petit (~58 lignes) ou de signaux trop forts dans les commentaires polarisés.</li>
+        <li><strong>Pas de classe "neutre"</strong> dans le modèle augmenté : choix volontaire faute de vrais avis neutres dans le dataset original (seulement 2).</li>
+    </ul>
+    ''', unsafe_allow_html=True)
+
+    # ─── Section 7 : Ressources ──────────────────────────────────────────
+    st.markdown('<div class="methodo-h2">🔗 Ressources</div>', unsafe_allow_html=True)
+    st.markdown('''
+    <a class="resource-link" href="https://huggingface.co/Ahmat293/camembert-sentiment-ynov" target="_blank">
+        🤗 <strong>Modèle CamemBERT original</strong> · entraîné sur le dataset brut (3 classes)
+    </a>
+    <a class="resource-link" href="https://huggingface.co/Ahmat293/camembert-ynov-augmented" target="_blank">
+        🤗 <strong>Modèle CamemBERT augmenté</strong> · fine-tuné sur dataset augmenté (binaire)
+    </a>
+    <a class="resource-link" href="https://github.com/aadamgk/camembert-sentiment-app" target="_blank">
+        ⌨ <strong>Code source GitHub</strong> · app + notebook + specs détaillées
+    </a>
+    ''', unsafe_allow_html=True)
 
 # ─── Footer ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
