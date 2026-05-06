@@ -703,6 +703,17 @@ with col_input:
                 "time": datetime.now().strftime("%H:%M"),
                 "model": selected_model_name,
             })
+
+            # Persistance Supabase (best-effort)
+            save_prediction(
+                comment=comment,
+                sentiment=sentiment,
+                confidence=confidence,
+                model_name=selected_model_name,
+                model_id=config["id"],
+            )
+            # Invalider le cache de l'historique global pour qu'il se rafraîchisse
+            fetch_global_history.clear()
         else:
             st.warning("Entrez un commentaire d'abord.")
 
