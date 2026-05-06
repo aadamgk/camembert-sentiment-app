@@ -716,49 +716,32 @@ if df_source is not None:
                 st.plotly_chart(fig_donut, use_container_width=True)
 
             with col_right:
-                # Tentative de parsing temporel ; si les dates sont relatives ("il y a X mois")
-                # → tout devient NaT → on bascule sur un bar chart horizontal pos/neg/neu.
-                df_time = None
-                if "date" in df_source.columns:
-                    df_source["date_clean"] = pd.to_datetime(df_source["date"], errors="coerce")
-                    df_valid = df_source.dropna(subset=["date_clean"])
-                    if len(df_valid) > 0:
-                        df_time = df_valid.groupby(
-                            [df_valid["date_clean"].dt.to_period("M"), "sentiment_label"]
-                        ).size().reset_index(name="count")
-                        df_time["date_clean"] = df_time["date_clean"].astype(str)
+                # Distribution des notes (1 à 5 étoiles) — granularité plus fine que le sentiment
+                if "rating" in df_source.columns:
+                    rating_counts = df_source["rating"].value_counts().sort_index()
+                    # Couleur selon le mapping rating → sentiment (1-2 rouge, 3 bleu, 4-5 vert)
+                    rating_colors = {1: "#f87171", 2: "#fb923c", 3: "#60a5fa", 4: "#86efac", 5: "#34d399"}
+                    colors = [rating_colors.get(int(r), "#9ca3af") for r in rating_counts.index]
+                    labels = [f"{r}★" for r in rating_counts.index]
 
-                if df_time is not None and len(df_time) > 0:
-                    fig_bar = px.bar(df_time, x="date_clean", y="count", color="sentiment_label",
-                                     color_discrete_map={"positif": "#34d399", "negatif": "#f87171", "neutre": "#60a5fa"},
-                                     barmode="stack")
-                    fig_bar.update_layout(
-                        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                        font_color="#9ca3af", showlegend=False,
-                        xaxis=dict(showgrid=False, color="#4b5563"),
-                        yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)", color="#4b5563"),
-                        margin=dict(t=20, b=20, l=10, r=10)
-                    )
-                    st.plotly_chart(fig_bar, use_container_width=True)
-                else:
-                    fig_h = go.Figure(go.Bar(
-                        x=[pos, neg, neu],
-                        y=["Positif", "Négatif", "Neutre"],
-                        orientation="h",
-                        marker_color=["#34d399", "#f87171", "#60a5fa"],
-                        text=[pos, neg, neu],
-                        textposition="auto",
+                    fig_rating = go.Figure(go.Bar(
+                        x=labels,
+                        y=rating_counts.values,
+                        marker_color=colors,
+                        text=rating_counts.values,
+                        textposition="outside",
+                        textfont=dict(color="#f0f0f5", size=12),
                     ))
-                    fig_h.update_layout(
+                    fig_rating.update_layout(
                         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                         font_color="#9ca3af",
                         showlegend=False,
-                        xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)", color="#4b5563"),
-                        yaxis=dict(showgrid=False, color="#9ca3af"),
-                        margin=dict(t=20, b=20, l=10, r=10),
-                        title=dict(text="Distribution des sentiments", font=dict(size=14, color="#9ca3af"), x=0, xanchor="left")
+                        xaxis=dict(showgrid=False, color="#9ca3af"),
+                        yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)", color="#4b5563"),
+                        margin=dict(t=40, b=20, l=10, r=10),
+                        title=dict(text="Distribution des notes (1-5 ★)", font=dict(size=13, color="#9ca3af"), x=0, xanchor="left")
                     )
-                    st.plotly_chart(fig_h, use_container_width=True)
+                    st.plotly_chart(fig_rating, use_container_width=True)
 
     except Exception as e:
         st.error(f"Erreur lors du chargement : {e}")
