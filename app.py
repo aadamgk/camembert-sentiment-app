@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 from transformers import pipeline
 from datetime import datetime
+from supabase import create_client, Client
 
 # ─── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -466,6 +467,49 @@ MODELS = {
         "hf_url": "https://huggingface.co/Ahmat293/camembert-ynov-augmented",
     },
 }
+
+# ─── Client Supabase ──────────────────────────────────────────────────────────
+@st.cache_resource
+def get_supabase_client():
+    """Retourne un client Supabase singleton, ou None si les secrets manquent."""
+    try:
+        url = st.secrets["SUPABASE_URL"]
+        key = st.secrets["SUPABASE_ANON_KEY"]
+        return create_client(url, key)
+    except (KeyError, FileNotFoundError):
+        return None
+
+def save_prediction(comment, sentiment, confidence, model_name, model_id):
+    """Insère une prédiction dans la table predictions de Supabase. Best-effort."""
+    client = get_supabase_client()
+    if client is None:
+        return
+    try:
+        client.table("predictions").insert({
+            "comment": comment,
+            "predicted_sentiment": sentiment,
+            "confidence": float(confidence),
+            "model_name": model_name,
+            "model_id": model_id,
+        }).execute()
+    except Exception as e:
+        st.warning(f"⚠️ Persistance Supabase indisponible : {type(e).__name__}", icon="⚠️")
+
+@st.cache_data(ttl=60)
+def fetch_global_history(limit=20):
+    """Récupère les N dernières prédictions, triées par date desc. Renvoie None si erreur."""
+    client = get_supabase_client()
+    if client is None:
+        return None
+    try:
+        result = client.table("predictions") \
+            .select("*") \
+            .order("created_at", desc=True) \
+            .limit(limit) \
+            .execute()
+        return result.data
+    except Exception:
+        return None
 
 @st.cache_resource
 def load_model(model_id, subfolder, tokenizer_subfolder):
