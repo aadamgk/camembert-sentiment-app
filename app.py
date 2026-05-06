@@ -716,13 +716,19 @@ if df_source is not None:
                 st.plotly_chart(fig_donut, use_container_width=True)
 
             with col_right:
+                # Tentative de parsing temporel ; si les dates sont relatives ("il y a X mois")
+                # → tout devient NaT → on bascule sur un bar chart horizontal pos/neg/neu.
+                df_time = None
                 if "date" in df_source.columns:
                     df_source["date_clean"] = pd.to_datetime(df_source["date"], errors="coerce")
-                    df_time = df_source.dropna(subset=["date_clean"]).groupby(
-                        [df_source["date_clean"].dt.to_period("M"), "sentiment_label"]
-                    ).size().reset_index(name="count")
-                    df_time["date_clean"] = df_time["date_clean"].astype(str)
+                    df_valid = df_source.dropna(subset=["date_clean"])
+                    if len(df_valid) > 0:
+                        df_time = df_valid.groupby(
+                            [df_valid["date_clean"].dt.to_period("M"), "sentiment_label"]
+                        ).size().reset_index(name="count")
+                        df_time["date_clean"] = df_time["date_clean"].astype(str)
 
+                if df_time is not None and len(df_time) > 0:
                     fig_bar = px.bar(df_time, x="date_clean", y="count", color="sentiment_label",
                                      color_discrete_map={"positif": "#34d399", "negatif": "#f87171", "neutre": "#60a5fa"},
                                      barmode="stack")
@@ -739,14 +745,18 @@ if df_source is not None:
                         x=[pos, neg, neu],
                         y=["Positif", "Négatif", "Neutre"],
                         orientation="h",
-                        marker_color=["#34d399", "#f87171", "#60a5fa"]
+                        marker_color=["#34d399", "#f87171", "#60a5fa"],
+                        text=[pos, neg, neu],
+                        textposition="auto",
                     ))
                     fig_h.update_layout(
                         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                         font_color="#9ca3af",
-                        xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)"),
-                        yaxis=dict(showgrid=False),
-                        margin=dict(t=20, b=20, l=10, r=10)
+                        showlegend=False,
+                        xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)", color="#4b5563"),
+                        yaxis=dict(showgrid=False, color="#9ca3af"),
+                        margin=dict(t=20, b=20, l=10, r=10),
+                        title=dict(text="Distribution des sentiments", font=dict(size=14, color="#9ca3af"), x=0, xanchor="left")
                     )
                     st.plotly_chart(fig_h, use_container_width=True)
 
