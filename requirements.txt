@@ -1,8 +1,11 @@
-﻿streamlit
+streamlit
+pandas
+numpy
+plotly
 transformers
 torch
 huggingface_hub
 sentencepiece
+protobuf<5
 scikit-learn
-plotly
 supabase
