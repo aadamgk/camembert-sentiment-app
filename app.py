@@ -215,17 +215,26 @@ if "new_comments" not in st.session_state:
 MODELS = {
     "CamemBERT (original)": {
         "id": "Ahmat293/camembert-sentiment-ynov",
+        "subfolder": "model",            # le modèle est dans un sous-dossier
+        "tokenizer_subfolder": "tokenizer",
         "label_map": {"LABEL_0": "négatif", "LABEL_1": "positif"},
     },
     "CamemBERT (augmenté)": {
         "id": "Ahmat293/camembert-ynov-augmented",
+        "subfolder": None,                # à la racine
+        "tokenizer_subfolder": None,
         "label_map": {"negatif": "négatif", "positif": "positif"},
     },
 }
 
 @st.cache_resource
-def load_model(model_id):
-    return pipeline("sentiment-analysis", model=model_id)
+def load_model(model_id, subfolder, tokenizer_subfolder):
+    from transformers import AutoModelForSequenceClassification, AutoTokenizer
+    model_kwargs = {"subfolder": subfolder} if subfolder else {}
+    tok_kwargs = {"subfolder": tokenizer_subfolder} if tokenizer_subfolder else {}
+    model = AutoModelForSequenceClassification.from_pretrained(model_id, **model_kwargs)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, **tok_kwargs)
+    return pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
 
 def predict(text, classifier, label_map):
     result = classifier(text[:512])[0]
@@ -352,7 +361,7 @@ with col_input:
         if comment.strip():
             with st.spinner("Analyse en cours..."):
                 config = MODELS[selected_model_name]
-                classifier = load_model(config["id"])
+                classifier = load_model(config["id"], config["subfolder"], config["tokenizer_subfolder"])
                 sentiment, confidence = predict(comment, classifier, config["label_map"])
 
             css_class = {"positif": "result-pos", "négatif": "result-neg", "neutre": "result-neu"}.get(sentiment, "result-neu")
