@@ -429,6 +429,92 @@ st.markdown("""
 .footer-links a:hover {
     color: #a78bfa;
 }
+
+/* ─── Card de comparaison (3e card) ─── */
+.model-card.comparison-card {
+    border: 2px dashed rgba(96,165,250,0.3);
+    background: linear-gradient(135deg, rgba(96,165,250,0.05), rgba(52,211,153,0.05));
+}
+
+.model-card.comparison-card:hover {
+    border-color: rgba(96,165,250,0.5);
+    background: linear-gradient(135deg, rgba(96,165,250,0.10), rgba(52,211,153,0.08));
+    transform: translateY(-3px);
+}
+
+.model-card.comparison-card.selected {
+    border: 2px solid #60a5fa;
+    background: linear-gradient(135deg, rgba(96,165,250,0.15), rgba(52,211,153,0.10));
+    box-shadow: 0 0 0 1px #60a5fa, 0 12px 40px rgba(96,165,250,0.35);
+}
+
+.model-card.comparison-card.selected::before {
+    background: linear-gradient(90deg, #60a5fa, #34d399, #a78bfa);
+}
+
+.model-card.comparison-card.selected::after {
+    content: "✓ MODE DUAL";
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    box-shadow: 0 2px 8px rgba(96,165,250,0.5);
+}
+
+.comparison-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    flex: 1;
+}
+
+.comparison-vs-icon {
+    font-size: 2.2rem;
+}
+
+/* ─── Verdict banner ─── */
+.verdict-banner {
+    border-radius: 12px;
+    padding: 0.9rem 1.4rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    line-height: 1.4;
+}
+
+.verdict-accord {
+    background: rgba(52,211,153,0.12);
+    border: 1px solid rgba(52,211,153,0.4);
+    color: #34d399;
+}
+
+.verdict-partiel {
+    background: rgba(251,191,36,0.12);
+    border: 1px solid rgba(251,191,36,0.4);
+    color: #fbbf24;
+}
+
+.verdict-desaccord {
+    background: rgba(248,113,113,0.12);
+    border: 1px solid rgba(248,113,113,0.4);
+    color: #f87171;
+}
+
+/* ─── Mini-titre dans chaque colonne du dual ─── */
+.dual-model-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -465,6 +551,12 @@ MODELS = {
         "f1_macro": 0.9833,
         "description": "Fine-tuné sur dataset augmenté (394 avis, binaire pos/neg)",
         "hf_url": "https://huggingface.co/Ahmat293/camembert-ynov-augmented",
+    },
+    "Comparer les deux": {
+        "is_comparison": True,
+        "emoji": "🆚",
+        "subtitle": "Mode dual",
+        "description": "Voir les 2 verdicts + accord/désaccord en un clic",
     },
 }
 
@@ -524,6 +616,57 @@ def predict(text, classifier, label_map):
     result = classifier(text[:512])[0]
     raw_label = result["label"]
     return label_map.get(raw_label, raw_label), round(result["score"] * 100, 1)
+
+def predict_dual(text):
+    """Exécute les 2 modèles réels et calcule le verdict d'accord/désaccord."""
+    real_models = [name for name, cfg in MODELS.items() if not cfg.get("is_comparison", False)]
+    results = {}
+    for name in real_models:
+        cfg = MODELS[name]
+        clf = load_model(cfg["id"], cfg["subfolder"], cfg["tokenizer_subfolder"])
+        sentiment, confidence = predict(text, clf, cfg["label_map"])
+        results[name] = {
+            "sentiment": sentiment,
+            "confidence": confidence,
+            "model_id": cfg["id"],
+        }
+    s_orig = results["CamemBERT (original)"]["sentiment"]
+    s_aug = results["CamemBERT (augmenté)"]["sentiment"]
+    if s_orig == s_aug:
+        verdict = "accord"
+        verdict_text = f"🟢 Les 2 modèles sont d'accord ({s_orig})"
+    elif s_orig == "neutre":
+        verdict = "partiel"
+        verdict_text = f"🟡 L'augmenté tranche ({s_aug}), l'original reste neutre"
+    else:
+        verdict = "desaccord"
+        verdict_text = f"🟡 Désaccord — Original: {s_orig} · Augmenté: {s_aug}"
+    return results, verdict, verdict_text
+
+def render_dual_result(results, verdict, verdict_text):
+    """Affiche le verdict banner puis les 2 résultats côte-à-côte."""
+    st.markdown(
+        f'<div class="verdict-banner verdict-{verdict}">{verdict_text}</div>',
+        unsafe_allow_html=True
+    )
+    cols = st.columns(2)
+    for col, (model_name, r) in zip(cols, results.items()):
+        with col:
+            icon = "📜" if "original" in model_name.lower() else "✨"
+            short_name = "Original" if "original" in model_name.lower() else "Augmenté"
+            sentiment = r["sentiment"]
+            confidence = r["confidence"]
+            css_class = {"positif": "result-pos", "négatif": "result-neg", "neutre": "result-neu"}.get(sentiment, "result-neu")
+            sentiment_icon = {"positif": "😊", "négatif": "😞", "neutre": "😐"}.get(sentiment, "😐")
+            bar_gradient = {
+                "positif": "linear-gradient(90deg, #34d399, #10b981)",
+                "négatif": "linear-gradient(90deg, #f87171, #ef4444)",
+                "neutre":  "linear-gradient(90deg, #60a5fa, #3b82f6)",
+            }.get(sentiment, "linear-gradient(90deg, #60a5fa, #3b82f6)")
+            st.markdown(f'<div class="dual-model-label">{icon} {short_name}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="result-box {css_class}">{sentiment_icon} <span>{sentiment.upper()}</span></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="confidence-bar-track"><div class="confidence-bar-fill" style="width:{confidence}%;background:{bar_gradient}"></div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="confidence-bar-label">{confidence}% de confiance</div>', unsafe_allow_html=True)
 
 # ─── Header ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="main-title">Ynov Sentiment<br>Analyser</div>', unsafe_allow_html=True)
@@ -632,6 +775,23 @@ col_input, col_history = st.columns([1, 1], gap="large")
 def render_model_card(model_name, is_selected):
     cfg = MODELS[model_name]
     selected_class = "selected" if is_selected else ""
+    is_comparison = cfg.get("is_comparison", False)
+
+    if is_comparison:
+        return f"""
+        <div class="model-card comparison-card {selected_class}">
+            <div class="model-card-header">
+                <span class="model-card-emoji">{cfg['emoji']}</span>
+                <span class="model-card-title">{model_name}</span>
+            </div>
+            <div class="model-card-subtitle">{cfg['subtitle']}</div>
+            <div class="comparison-badge-row">
+                <span class="comparison-vs-icon">⚖️</span>
+            </div>
+            <div class="model-card-desc">{cfg['description']}</div>
+        </div>
+        """
+
     acc = f"{cfg['accuracy']*100:.1f}%" if cfg['accuracy'] is not None else "—"
     f1 = f"{cfg['f1_macro']:.3f}" if cfg['f1_macro'] is not None else "—"
 
@@ -662,8 +822,8 @@ with col_input:
 
     # ─── Sélecteur de modèle en cards ─────────────────────────────────────
     st.markdown('<div class="model-selector-row">', unsafe_allow_html=True)
-    card_cols = st.columns(2)
     model_names = list(MODELS.keys())
+    card_cols = st.columns(len(model_names))
     for col, name in zip(card_cols, model_names):
         with col:
             is_selected = (st.session_state.selected_model == name)
@@ -674,46 +834,71 @@ with col_input:
     st.markdown('</div>', unsafe_allow_html=True)
 
     selected_model_name = st.session_state.selected_model
+    selected_config = MODELS[selected_model_name]
+    is_comparison = selected_config.get("is_comparison", False)
+    button_label = "Comparer les modèles" if is_comparison else "Analyser le sentiment"
 
     comment = st.text_area("", placeholder="Entrez un avis étudiant...", height=130, label_visibility="collapsed")
 
-    if st.button("Analyser le sentiment", key="analyze_btn"):
+    if st.button(button_label, key="analyze_btn"):
         if comment.strip():
-            with st.spinner("Analyse en cours..."):
-                config = MODELS[selected_model_name]
-                classifier = load_model(config["id"], config["subfolder"], config["tokenizer_subfolder"])
-                sentiment, confidence = predict(comment, classifier, config["label_map"])
+            if is_comparison:
+                with st.spinner("Comparaison des 2 modèles..."):
+                    results, verdict, verdict_text = predict_dual(comment)
 
-            css_class = {"positif": "result-pos", "négatif": "result-neg", "neutre": "result-neu"}.get(sentiment, "result-neu")
-            icon = {"positif": "😊", "négatif": "😞", "neutre": "😐"}.get(sentiment, "😐")
-            bar_gradient = {
-                "positif": "linear-gradient(90deg, #34d399, #10b981)",
-                "négatif": "linear-gradient(90deg, #f87171, #ef4444)",
-                "neutre":  "linear-gradient(90deg, #60a5fa, #3b82f6)",
-            }.get(sentiment, "linear-gradient(90deg, #60a5fa, #3b82f6)")
+                render_dual_result(results, verdict, verdict_text)
 
-            st.markdown(f'<div class="result-box {css_class}">{icon} <span>{sentiment.upper()}</span></div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="confidence-bar-track"><div class="confidence-bar-fill" style="width:{confidence}%;background:{bar_gradient}"></div></div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="confidence-bar-label">{confidence}% de confiance</div>', unsafe_allow_html=True)
+                # Persist + history pour les 2 modèles
+                for model_name, r in results.items():
+                    short_comment = comment[:60] + "..." if len(comment) > 60 else comment
+                    st.session_state.new_comments.append({
+                        "comment": short_comment,
+                        "sentiment": r["sentiment"],
+                        "confidence": r["confidence"],
+                        "time": datetime.now().strftime("%H:%M"),
+                        "model": model_name,
+                    })
+                    save_prediction(
+                        comment=comment,
+                        sentiment=r["sentiment"],
+                        confidence=r["confidence"],
+                        model_name=model_name,
+                        model_id=r["model_id"],
+                    )
+                fetch_global_history.clear()
+            else:
+                with st.spinner("Analyse en cours..."):
+                    classifier = load_model(selected_config["id"], selected_config["subfolder"], selected_config["tokenizer_subfolder"])
+                    sentiment, confidence = predict(comment, classifier, selected_config["label_map"])
 
-            st.session_state.new_comments.append({
-                "comment": comment[:60] + "..." if len(comment) > 60 else comment,
-                "sentiment": sentiment,
-                "confidence": confidence,
-                "time": datetime.now().strftime("%H:%M"),
-                "model": selected_model_name,
-            })
+                css_class = {"positif": "result-pos", "négatif": "result-neg", "neutre": "result-neu"}.get(sentiment, "result-neu")
+                icon = {"positif": "😊", "négatif": "😞", "neutre": "😐"}.get(sentiment, "😐")
+                bar_gradient = {
+                    "positif": "linear-gradient(90deg, #34d399, #10b981)",
+                    "négatif": "linear-gradient(90deg, #f87171, #ef4444)",
+                    "neutre":  "linear-gradient(90deg, #60a5fa, #3b82f6)",
+                }.get(sentiment, "linear-gradient(90deg, #60a5fa, #3b82f6)")
 
-            # Persistance Supabase (best-effort)
-            save_prediction(
-                comment=comment,
-                sentiment=sentiment,
-                confidence=confidence,
-                model_name=selected_model_name,
-                model_id=config["id"],
-            )
-            # Invalider le cache de l'historique global pour qu'il se rafraîchisse
-            fetch_global_history.clear()
+                st.markdown(f'<div class="result-box {css_class}">{icon} <span>{sentiment.upper()}</span></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="confidence-bar-track"><div class="confidence-bar-fill" style="width:{confidence}%;background:{bar_gradient}"></div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="confidence-bar-label">{confidence}% de confiance</div>', unsafe_allow_html=True)
+
+                st.session_state.new_comments.append({
+                    "comment": comment[:60] + "..." if len(comment) > 60 else comment,
+                    "sentiment": sentiment,
+                    "confidence": confidence,
+                    "time": datetime.now().strftime("%H:%M"),
+                    "model": selected_model_name,
+                })
+
+                save_prediction(
+                    comment=comment,
+                    sentiment=sentiment,
+                    confidence=confidence,
+                    model_name=selected_model_name,
+                    model_id=selected_config["id"],
+                )
+                fetch_global_history.clear()
         else:
             st.warning("Entrez un commentaire d'abord.")
 
