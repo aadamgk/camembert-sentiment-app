@@ -219,10 +219,10 @@ st.markdown("""
     backdrop-filter: blur(10px);
     transition: all 0.25s ease;
     position: relative;
-    height: 360px;
+    min-height: 360px;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
     box-sizing: border-box;
 }
 
@@ -235,6 +235,8 @@ st.markdown("""
     height: 3px;
     background: linear-gradient(90deg, transparent, transparent);
     transition: background 0.25s ease;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
 }
 
 .model-card:hover {
@@ -352,12 +354,17 @@ st.markdown("""
     position: relative;
 }
 
+.model-selector-row [data-testid="column"] {
+    height: auto !important;
+}
+
 .model-selector-row [data-testid="column"] .stButton {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 360px;
+    bottom: 0;
+    height: 100%;
     margin: 0 !important;
     padding: 0 !important;
 }
