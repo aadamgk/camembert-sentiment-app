@@ -587,22 +587,6 @@ def save_prediction(comment, sentiment, confidence, model_name, model_id):
     except Exception as e:
         st.warning(f"⚠️ Persistance Supabase indisponible : {type(e).__name__}", icon="⚠️")
 
-@st.cache_data(ttl=60)
-def fetch_global_history(limit=20):
-    """Récupère les N dernières prédictions, triées par date desc. Renvoie None si erreur."""
-    client = get_supabase_client()
-    if client is None:
-        return None
-    try:
-        result = client.table("predictions") \
-            .select("*") \
-            .order("created_at", desc=True) \
-            .limit(limit) \
-            .execute()
-        return result.data
-    except Exception:
-        return None
-
 @st.cache_resource
 def load_model(model_id, subfolder, tokenizer_subfolder):
     from transformers import AutoModelForSequenceClassification, AutoTokenizer
@@ -865,7 +849,6 @@ with col_input:
                         model_name=model_name,
                         model_id=r["model_id"],
                     )
-                fetch_global_history.clear()
             else:
                 with st.spinner("Analyse en cours..."):
                     classifier = load_model(selected_config["id"], selected_config["subfolder"], selected_config["tokenizer_subfolder"])
@@ -898,7 +881,6 @@ with col_input:
                     model_name=selected_model_name,
                     model_id=selected_config["id"],
                 )
-                fetch_global_history.clear()
         else:
             st.warning("Entrez un commentaire d'abord.")
 
@@ -945,51 +927,6 @@ with col_history:
             st.rerun()
     else:
         st.markdown('<div style="color:#4b5563;text-align:center;padding:3rem 0;font-size:0.9rem">Aucune analyse encore effectuée</div>', unsafe_allow_html=True)
-
-# ─── Historique global Supabase ────────────────────────────────────────────────
-st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
-col_title, col_refresh = st.columns([4, 1])
-with col_title:
-    st.markdown('<div class="section-title">🌐 Historique global · Supabase</div>', unsafe_allow_html=True)
-with col_refresh:
-    if st.button("↻ Rafraîchir", key="refresh_global", help="Recharger depuis Supabase"):
-        fetch_global_history.clear()
-        st.rerun()
-
-global_history = fetch_global_history(limit=20)
-
-if global_history is None:
-    st.markdown('<div style="color:#6b7280;text-align:center;padding:1.5rem 0;font-size:0.85rem">⚠️ Connexion Supabase indisponible — l\'historique global ne peut pas être chargé.</div>', unsafe_allow_html=True)
-elif len(global_history) == 0:
-    st.markdown('<div style="color:#4b5563;text-align:center;padding:1.5rem 0;font-size:0.85rem">Aucune prédiction enregistrée pour le moment.</div>', unsafe_allow_html=True)
-else:
-    for row in global_history:
-        sent_raw = row.get("predicted_sentiment", "")
-        badge_class = {"positif": "badge-pos", "négatif": "badge-neg", "neutre": "badge-neu"}.get(sent_raw, "badge-neu")
-        model = row.get("model_name", "")
-        if "augmenté" in model.lower():
-            model_class = "comment-item-augmented"
-            model_icon = "✨"
-        else:
-            model_class = "comment-item-original"
-            model_icon = "📜"
-        comment_full = row.get("comment", "")
-        comment_short = (comment_full[:80] + "...") if len(comment_full) > 80 else comment_full
-        try:
-            dt = datetime.fromisoformat(row["created_at"].replace("Z", "+00:00"))
-            time_str = dt.strftime("%d/%m %H:%M")
-        except Exception:
-            time_str = ""
-        confidence = row.get("confidence", 0)
-        st.markdown(f'''
-        <div class="comment-item {model_class}">
-            <span class="history-model-icon">{model_icon}</span>
-            <span style="color:#d1d5db;flex:1">{comment_short}</span>
-            <span style="color:#4b5563;font-size:0.7rem;margin:0 0.5rem">{confidence}%</span>
-            <span style="color:#4b5563;font-size:0.75rem;margin:0 0.8rem">{time_str}</span>
-            <span class="badge {badge_class}">{sent_raw}</span>
-        </div>''', unsafe_allow_html=True)
 
 # ─── Footer ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
