@@ -215,11 +215,11 @@ st.markdown("""
     background: rgba(255,255,255,0.04);
     border: 2px solid rgba(255,255,255,0.08);
     border-radius: 16px;
-    padding: 1.5rem 1.5rem 1.2rem 1.5rem;
+    padding: 1.4rem 1.3rem 1.1rem 1.3rem;
     backdrop-filter: blur(10px);
     transition: all 0.25s ease;
     position: relative;
-    height: 340px;
+    height: 360px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -357,7 +357,7 @@ st.markdown("""
     top: 0;
     left: 0;
     right: 0;
-    height: 340px;
+    height: 360px;
     margin: 0 !important;
     padding: 0 !important;
 }
@@ -536,7 +536,7 @@ MODELS = {
         "num_classes": 3,
         "accuracy": None,
         "f1_macro": None,
-        "description": "Modèle initial entraîné sur le dataset original (550 avis, 3 classes pos/neu/neg)",
+        "description": "Entraîné sur les 550 avis bruts (3 classes).",
         "hf_url": "https://huggingface.co/Ahmat293/camembert-sentiment-ynov",
     },
     "CamemBERT (augmenté)": {
@@ -549,14 +549,14 @@ MODELS = {
         "num_classes": 2,
         "accuracy": 0.9833,
         "f1_macro": 0.9833,
-        "description": "Fine-tuné sur dataset augmenté (394 avis, binaire pos/neg)",
+        "description": "Fine-tuné sur 394 avis augmentés (binaire).",
         "hf_url": "https://huggingface.co/Ahmat293/camembert-ynov-augmented",
     },
     "Comparer les deux": {
         "is_comparison": True,
         "emoji": "🆚",
         "subtitle": "Mode dual",
-        "description": "Voir les 2 verdicts + accord/désaccord en un clic",
+        "description": "Voir les 2 verdicts + accord/désaccord.",
     },
 }
 
