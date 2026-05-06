@@ -212,36 +212,62 @@ st.markdown("""
 /* ─── Cards de sélection de modèle ─── */
 .model-card {
     background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.08);
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem 1.2rem 1.5rem;
     backdrop-filter: blur(10px);
     transition: all 0.25s ease;
     position: relative;
-    height: 100%;
-    min-height: 220px;
+    height: 290px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.model-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, transparent);
+    transition: background 0.25s ease;
 }
 
 .model-card:hover {
-    border-color: rgba(167,139,250,0.4);
+    border-color: rgba(167,139,250,0.5);
     background: rgba(167,139,250,0.06);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
 }
 
 .model-card.selected {
-    border-color: rgba(167,139,250,0.7);
-    background: linear-gradient(135deg, rgba(167,139,250,0.08), rgba(96,165,250,0.08));
-    box-shadow: 0 0 30px rgba(167,139,250,0.15);
+    border-color: #a78bfa;
+    background: linear-gradient(135deg, rgba(167,139,250,0.18), rgba(96,165,250,0.12));
+    box-shadow: 0 0 0 1px #a78bfa, 0 12px 40px rgba(167,139,250,0.35);
+    transform: translateY(-2px);
+}
+
+.model-card.selected::before {
+    background: linear-gradient(90deg, #a78bfa, #60a5fa, #34d399);
 }
 
 .model-card.selected::after {
-    content: "✓";
+    content: "✓ SÉLECTIONNÉ";
     position: absolute;
-    top: 12px;
-    right: 16px;
-    color: #a78bfa;
-    font-size: 1.3rem;
+    top: 10px;
+    right: 12px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.62rem;
     font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.55rem;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(167,139,250,0.5);
 }
 
 .model-card-header {
@@ -311,6 +337,8 @@ st.markdown("""
     text-decoration: none;
     border-bottom: 1px dashed rgba(167,139,250,0.4);
     padding-bottom: 1px;
+    margin-top: auto;
+    align-self: flex-start;
 }
 
 .model-card-link:hover {
@@ -318,28 +346,39 @@ st.markdown("""
     border-color: rgba(196,181,253,0.7);
 }
 
-/* ─── Bouton de sélection en overlay (transparent) ─── */
-.model-selector-row .stButton > button {
+/* ─── Bouton de sélection en overlay (transparent et plein-card) ─── */
+.model-selector-row [data-testid="column"] {
+    position: relative;
+}
+
+.model-selector-row [data-testid="column"] .stButton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 290px;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.model-selector-row [data-testid="column"] .stButton > button {
     background: transparent !important;
     border: none !important;
     color: transparent !important;
     width: 100% !important;
-    height: 220px !important;
-    margin-top: -240px !important;
+    height: 100% !important;
     padding: 0 !important;
-    z-index: 10;
-    position: relative;
+    margin: 0 !important;
+    box-shadow: none !important;
     cursor: pointer;
-    box-shadow: none !important;
 }
 
-.model-selector-row .stButton > button:hover {
-    background: transparent !important;
-}
-
-.model-selector-row .stButton > button:focus {
+.model-selector-row [data-testid="column"] .stButton > button:hover,
+.model-selector-row [data-testid="column"] .stButton > button:focus,
+.model-selector-row [data-testid="column"] .stButton > button:active {
     background: transparent !important;
     box-shadow: none !important;
+    color: transparent !important;
 }
 
 /* ─── Barre de confiance ─── */
