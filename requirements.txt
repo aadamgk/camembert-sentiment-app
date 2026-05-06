@@ -5,3 +5,4 @@ huggingface_hub
 sentencepiece
 scikit-learn
 plotly
+supabase
